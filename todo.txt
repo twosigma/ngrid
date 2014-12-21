@@ -1,0 +1,12 @@
+- Fix code banners.
+- Rename header -> title in columns.
+- change types dynamically in DelimitedFileModel
+- Factor out controller.
+- Fix search.
+- Jump to column by name.
+- Datetime support.
+- Revamp keymap.
+- Update help to match keymap.
+- Timezone support. (?)
+- Add __repr__ to formatters.
+- Comment formatters.
