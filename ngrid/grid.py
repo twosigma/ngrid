@@ -6,6 +6,8 @@ Based on ngrid.py by smyang.
 
 #-------------------------------------------------------------------------------
 
+from   __future__ import absolute_import
+
 from   contextlib import closing
 import csv
 import curses
@@ -25,7 +27,7 @@ from   .terminal import get_terminal_size
 SAMPLELINES = 200
 DELIMS = [',', ' ', '|', '\t']
 
-QUOTE_CHAR = "\""
+QUOTE_CHAR = '"'
 
 # Types, ordered from most specific to least specific.
 TYPES = [bool, int, float, str]
@@ -325,7 +327,10 @@ class DelimitedFileModel:
 
         # Keep reading.
         while count < max_lines:
-            line = next(self.__lines)
+            try:
+                line = next(self.__lines)
+            except StopIteration:
+                break
             lines.append(line)
             if not self.__is_comment(line):
                 count += 1

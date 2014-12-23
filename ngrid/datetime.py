@@ -4,6 +4,8 @@ Date and time tools.
 
 #-------------------------------------------------------------------------------
 
+from   __future__ import absolute_import
+
 import datetime
 import re
 
