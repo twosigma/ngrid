@@ -1,4 +1,3 @@
-- Fix code banners.
 - Rename header -> title in columns.
 - change types dynamically in DelimitedFileModel
 - Factor out controller.
