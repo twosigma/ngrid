@@ -5,6 +5,8 @@ import optparse
 import os
 import sys
 
+from   six import print_
+
 from   . import grid
 
 #-------------------------------------------------------------------------------
@@ -73,7 +75,7 @@ if __name__ == '__main__':
     try:    
         main()
     except (IOError, EOFError) as exc:
-        print(exc, file=sys.stderr)
+        print_(exc, file=sys.stderr)
     except InterruptedError:
         pass
 

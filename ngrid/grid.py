@@ -6,7 +6,7 @@ Based on ngrid.py by smyang.
 
 #-------------------------------------------------------------------------------
 
-from   __future__ import absolute_import
+from   __future__ import absolute_import, division
 
 from   contextlib import closing
 import csv
@@ -378,7 +378,7 @@ class DataFrameModel:
     # No title lines available.
     title_lines = []
 
-    def __init__(self, df, *, filename=None):
+    def __init__(self, df, filename=None):
         self.__df = df
         self.__filename = filename
 
@@ -442,7 +442,7 @@ class GridView:
     View (and controller) for tabular data models.
     """
 
-    def __init__(self, model, cfg={}, *, num_frozen=0):
+    def __init__(self, model, cfg={}, num_frozen=0):
         """
         @param num_frozen
           The number of frozen columns on the left.
@@ -747,10 +747,9 @@ class GridView:
         attrs   = [ curses.color_pair(i) for i in range(1, 8) ]
 
         def write(string, attr):
-            nonlocal x
             length = width - x - (1 if y == height - 1 else 0)
             self.__screen.addnstr(y, x, string, length, attr)
-            x += len(string)
+            return len(string)
 
         num_frozen  = self.__num_frozen
         col0        = self.__col0
@@ -763,8 +762,7 @@ class GridView:
 
         # Print title lines first.
         for line in self.__model.title_lines:
-            x = 0
-            write(line)
+            x = write(line)
             y += 1
 
         # The header.
@@ -788,11 +786,11 @@ class GridView:
                     else attrs[1] if frozen
                     else attrs[0])
                 attr |= curses.A_UNDERLINE | curses.A_BOLD
-                write(col, attr)
+                x += write(col, attr)
                 if x >= width:
                     break
 
-                write(sep, attrs[2])
+                x += write(sep, attrs[2])
                 if x >= width:
                     break
 
@@ -823,14 +821,14 @@ class GridView:
                     else attrs[4] if at_cursor
                     else attrs[1] if frozen
                     else attrs[0])
-                write(col, attr)
+                x += write(col, attr)
                 if x >= width:
                     break
 
                 attr = (
                     attrs[4] if show_cursor and idx == cursor[0]
                     else attrs[2])
-                write(sep, attr)
+                x += write(sep, attr)
                 if x >= width:
                     break
 
@@ -864,7 +862,7 @@ class GridView:
             else:
                 value = ""
             status += " " * (width - len(status) - len(value) - 1) + value
-            write(status, attrs[3] | curses.A_REVERSE)
+            x += write(status, attrs[3] | curses.A_REVERSE)
 
 
     def __show_help(self):
@@ -926,7 +924,7 @@ class GridView:
 
 #-------------------------------------------------------------------------------
 
-def show_model(model, cfg={}, *, num_frozen=0):
+def show_model(model, cfg={}, num_frozen=0):
     """
     Shows an interactive view of the model on a connected TTY.
 
@@ -963,7 +961,7 @@ def show_model(model, cfg={}, *, num_frozen=0):
         curses.endwin()
 
 
-def show_dataframe(df, cfg={}, *, filename=None, **kw_args):
+def show_dataframe(df, cfg={}, filename=None, **kw_args):
     """
     Shows an interactive view of the dataframe on a connected TTY.
     """

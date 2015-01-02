@@ -16,7 +16,7 @@ from   .datetime import ensure_datetime
 
 class BoolFormatter:
 
-    def __init__(self, true_str, false_str, *, pad_left=False):
+    def __init__(self, true_str, false_str, pad_left=False):
         width = max(len(true_str), len(false_str))
         true_str = text.pad(true_str, width, left=pad_left)
         false_str = text.pad(false_str, width, left=pad_left)
@@ -52,7 +52,7 @@ class BoolFormatter:
 
 class IntFormatter:
 
-    def __init__(self, size, *, pad=" ", sign="-"):
+    def __init__(self, size, pad=" ", sign="-"):
         """
         @param size
           The number of digits.
@@ -139,7 +139,7 @@ class IntFormatter:
 
 class FloatFormatter:
 
-    def __init__(self, size, precision, *, pad=" ", sign="-", point=".",
+    def __init__(self, size, precision, pad=" ", sign="-", point=".",
                  nan_str="NaN", inf_str="Inf"):
         """
         @param size
@@ -288,7 +288,7 @@ class FloatFormatter:
 
 class StrFormatter:
 
-    def __init__(self, size, *, ellipsis="...", pad=" ", position=1.0, 
+    def __init__(self, size, ellipsis="...", pad=" ", position=1.0, 
                  pad_left=False):
         self.__size     = size
         self.__ellipsis = ellipsis

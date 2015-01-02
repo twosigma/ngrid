@@ -13,7 +13,7 @@ def indent(string, indent):
         + ("\n" if string.endswith("\n") else ""))
 
 
-def pad(string, length, *, pad=" ", left=False):
+def pad(string, length, pad=" ", left=False):
     """
     Pads a string to achieve a minimum length.
 
@@ -32,7 +32,7 @@ def pad(string, length, *, pad=" ", left=False):
         return string
 
 
-def elide(string, max_length, *, ellipsis="...", position=1.0):
+def elide(string, max_length, ellipsis="...", position=1.0):
     """
     Elides characters to reduce a string to a maximum length.
 
@@ -72,7 +72,7 @@ def elide(string, max_length, *, ellipsis="...", position=1.0):
     return elided
 
 
-def palide(string, length, *, ellipsis="...", pad=" ", position=1.0, left=False):
+def palide(string, length, ellipsis="...", pad=" ", position=1.0, left=False):
     """
     A combination of `elide` and `pad`.
     """
