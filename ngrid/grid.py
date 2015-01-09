@@ -511,6 +511,7 @@ class GridView:
 
             curses.KEY_IC
                         : lambda: self.__toggle_cursor(),
+            ord('~')    : lambda: self.__toggle_cursor(),
             ord('|')    : lambda: self.__toggle_sep(),
             ord('H')    : lambda: self.__toggle_header(),
             ord('F')    : lambda: self.__toggle_footer(),
