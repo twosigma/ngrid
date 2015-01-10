@@ -151,6 +151,8 @@ class FloatFormatter:
           Pad character for the integral part.
         @param sign
           "-" for negative sign only, "+" for both, `None` for none.
+        @param point
+          The decimal point character.
         """
         assert size >= 0
         assert precision is None or precision >= 0
@@ -273,6 +275,166 @@ class FloatFormatter:
                 assert len(frac) <= precision
                 frac = text.pad(frac, self.__precision, pad="0", left=True)
                 result += self.__point + frac
+        return result
+
+
+    def __call__(self, value):
+        """
+        Converts a value to a float and formats it.
+        """
+        return self.format(float(value))
+
+
+
+#-------------------------------------------------------------------------------
+
+class ScientificFloatFormatter:
+
+    def __init__(self, size, precision, pad=" ", sign="-", point=".",
+                 exp="E", nan_str="NaN", inf_str="Inf"):
+        """
+        @param size
+          The number of digits for the exponent.
+        @param precision
+          The number of digits for the fracitonal part, or `None` to suppress
+          the decimal point.
+        @param pad
+          Pad character for the integral part.
+        @param sign
+          "-" for negative sign only, "+" for both, `None` for none.
+        @param point
+          The decimal point character.
+        """
+        assert size >= 0
+        assert precision is None or precision >= 0
+        assert len(pad) == 1
+        assert sign in (None, "-", "+")
+
+        width = 1 + len(point) + precision + len(exp) + 1 + size
+        nan_str = text.pad(nan_str.strip()[: width], width)
+        inf_str = text.pad(inf_str.strip()[: width], width)
+        if sign in ("-", "+"):
+            width += 1
+
+        self.__size         = size
+        self.__precision    = precision
+        self.__pad          = pad
+        self.__sign         = sign
+        self.__point        = point
+        self.__exp          = exp
+        self.__nan_str      = nan_str
+        self.__inf_str      = inf_str
+
+        self.__multiplier   = None if precision is None else 10 ** precision
+        self.__width        = width
+
+
+    @property
+    def size(self):
+        return self.__size
+
+
+    @property
+    def precision(self):
+        return self.__precision
+
+
+    @property
+    def pad(self):
+        return self.__pad
+
+
+    @property
+    def sign(self):
+        return self.__sign
+
+
+    @property
+    def point(self):
+        return self.__point
+
+
+    @property
+    def exp(self):
+        return self.__exp
+
+
+    @property
+    def nan_str(self):
+        return self.__nan_str
+
+
+    @property
+    def inf_str(self):
+        return self.__inf_str
+
+
+    @property
+    def width(self):
+        """
+        The width of a formatted value.
+        """
+        return self.__width
+
+
+    def changing(self, **kw_args):
+        args = dict(
+            precision   =self.__precision,
+            size        =self.__size,
+            pad         =self.__pad,
+            sign        =self.__sign,
+            point       =self.__point,
+            exp         =self.__exp,
+            nan_str     =self.__nan_str,
+            inf_str     =self.__inf_str)
+        args.update(kw_args)
+        return self.__class__(**args)
+
+
+    def format(self, value):
+        """
+        Formats a value.
+
+        @type value
+          `float`
+        """
+        def add_sign(result):
+            if self.__sign == "-":
+                return ("-" if value < 0 else " ") + result
+            elif self.__sign == "+":
+                return ("-" if value < 0 else "+") + result
+            else:
+                return result
+
+        if math.isnan(value):
+            result = add_sign(self.__nan_str)
+        elif math.isinf(value):
+            result = add_sign(self.__inf_str)
+        else:
+            abs_value = abs(value)
+            rnd_value = round(
+                abs_value, 
+                int(math.ceil(self.__precision - math.log10(abs_value))))
+            exp = int(math.floor(math.log10(rnd_value)))
+            mantissa = rnd_value / 10 ** exp
+            int_value = int(mantissa)
+            result = add_sign(str(int_value))
+            if self.__precision is None:
+                pass
+            elif self.__precision == 0:
+                result += self.__point
+            else:
+                frac = int(round((mantissa - int_value) * 10 ** self.__precision))
+                frac = text.pad(str(frac), self.__precision, pad="0", left=True)
+                result += self.__point + frac
+            result += self.__exp
+            result += "+" if exp >= 0 else "-"
+            exp = text.pad(str(abs(exp)), self.__size, pad="0", left=True)
+            if len(exp) > self.__size:
+                # Doesn't fit.
+                result += "#" * self.__size
+            else:
+                result += exp
         return result
 
 
