@@ -260,7 +260,7 @@ class FloatFormatter:
             abs_value = abs(rnd_value)
             int_value = int(abs_value)
             result = add_sign(str(int_value))
-            size = self.__size + (1 if self.__sign in "-+" else 0)
+            size = self.__size + (1 if self.__sign in ("-", "+") else 0)
             if len(result) > size:
                 # Doesn't fit.
                 return "#" * self.__width

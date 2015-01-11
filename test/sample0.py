@@ -1,3 +1,5 @@
+from   __future__ import division
+
 from   collections import OrderedDict
 from   datetime import datetime, date
 from   pytz import UTC, timezone
@@ -39,6 +41,14 @@ cols.update(
 cols.update(
     ("word{}".format(i), [ random_word() for _ in range(N) ])
     for i in range(4)
+    )
+cols.update(
+    ("sig{}".format(i), np.random.randint(0, 10 ** i, (N, )) / 10 ** (i - 1))
+    for i in range(2, 5)
+    )
+cols.update(
+    ("negsig{}".format(i), np.random.randint(-(10 ** i), 10 ** i, (N, )) / 10 ** (i - 1))
+    for i in range(2, 5)
     )
 cols.update(
     ("datetime{}".format(i), (np.random.uniform(631152000e9, 1577836800e9, (N, ))).astype("datetime64[ns]"))

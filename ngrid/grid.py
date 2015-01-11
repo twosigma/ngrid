@@ -39,17 +39,19 @@ NAN = float("NaN")
 SEPARATORS = [" ", "\u250a", "  ", "   ", " \u250a ", ]
 
 DEFAULT_CFG = {
-    "precision_min"     : "1",
-    "precision_max"     : "6",
-    "str_width_min"     : "4",
-    "str_width_max"     : "32",
-    "nan_string"        : "NaN",
-    "inf_string"        : "\u221e",
     "ellipsis"          : "\u2026",
+    "inf_string"        : "\u221e",
+    "nan_string"        : "NaN",
+    "precision_max"     : "6",
+    "precision_min"     : "1",
+    "scientific_max"    : 1e-8,
+    "scientific_min"    : 1e+12,
     "separator"         : " ",
-    "show_header"       : "True",
-    "show_footer"       : "True",
     "show_cursor"       : "False",
+    "show_footer"       : "True",
+    "show_header"       : "True",
+    "str_width_max"     : "32",
+    "str_width_min"     : "4",
     }
 
 #-------------------------------------------------------------------------------
@@ -136,9 +138,20 @@ def get_default_formatter(type, values, cfg={}):
         return formatters.IntFormatter(size)
 
     elif type is float:
-        # Float types.
+        # Float types.  First determine the scale.
         vals = values[~(np.isnan(values) | np.isinf(values))]
-        size = 1 if len(vals) == 0 else get_size(abs(vals).max())
+        neg = (vals < 0).any()
+        abs_vals = abs(vals)
+        max_val = abs_vals.max()
+        if (max_val == 0 
+            or cfg["scientific_max"] < max_val < cfg["scientific_min"]):
+            fmt = formatters.FloatFormatter
+            size = 1 if len(vals) == 0 else get_size(max_val)
+        else:
+            # Use scientific notation for very small or very large.
+            fmt = formatters.ScientificFloatFormatter
+            # Find the number of digits in the exponent.
+            size = max(1, int(ceil(log10(floor(abs(log10(max_val)))))))
         # Guess precision.  Try progressively higher precision until we find
         # one where rounding there won't leave any residuals larger than
         # we are willing to represent at all.
@@ -148,8 +161,9 @@ def get_default_formatter(type, values, cfg={}):
         for precision in range(precision_min, precision_max + 1):
             if (abs(np.round(vals, precision) - vals) < tol).all():
                 break
-        return formatters.FloatFormatter(
+        return fmt(
             size, precision, 
+            sign="-" if neg else None,
             nan_str=cfg["nan_string"],
             inf_str=cfg["inf_string"])
 

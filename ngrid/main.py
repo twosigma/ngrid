@@ -76,7 +76,7 @@ if __name__ == '__main__':
         main()
     except (IOError, EOFError) as exc:
         print_(exc, file=sys.stderr)
-    except InterruptedError:
+    except KeyboardInterrupt:
         pass
 
 
