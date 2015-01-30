@@ -8,4 +8,17 @@
 - Comment formatters.
 - Parse datetimes in CSV files?
 - change types dynamically in DelimitedFileModel
+- Choose index column width better.
+
+--------------------------------------------------------------------------------
+
+Possible additional features:
+
+- Show or hide a column.
+- Rearrange columns.
+- Toggle between normal and scientific notation.
+- Cycle / toggle among datetime formats.
+- Config file for interactive ngrid.
+- Load pickled Pandas dataframes automatically.
+- Display df multi-indexes as IPython notebook does.
 
