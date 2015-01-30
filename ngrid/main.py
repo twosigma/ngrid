@@ -1,6 +1,7 @@
 from   __future__ import absolute_import
 
 from   contextlib import closing
+import locale
 import optparse
 import os
 import sys
@@ -12,6 +13,10 @@ from   . import grid
 #-------------------------------------------------------------------------------
 
 def main():
+    # Set the default locale.  This is required for ncurses to decode encoded
+    # strings.  Hopefully, the encoding supports the characters we use.
+    locale.setlocale(locale.LC_ALL, "")
+
     parser = optparse.OptionParser()
 
     parser.set_defaults(hasHeader=True, commentString=None)

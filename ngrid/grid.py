@@ -12,9 +12,11 @@ from   contextlib import closing
 import csv
 import curses
 from   datetime import datetime
+import locale
 from   math import floor, ceil, log10, isnan, isinf
 import os
 import re
+from   six import u
 import sys
 
 import numpy as np
@@ -24,7 +26,10 @@ from   .terminal import get_terminal_size
 
 #-------------------------------------------------------------------------------
 
+# Number of lines to sample when guessing column types.
 SAMPLELINES = 200
+
+# Delimiters to try when parsing delimited text files.
 DELIMS = [',', ' ', '|', '\t']
 
 QUOTE_CHAR = '"'
@@ -36,22 +41,28 @@ HEADER = True
 
 NAN = float("NaN")
 
-SEPARATORS = [" ", "\u250a", "  ", "   ", " \u250a ", ]
+SEPARATORS = [
+    u(" "), 
+    u("\u250a"), 
+    u("  "), 
+    u("   "), 
+    u(" \u250a "), 
+    ]
 
 DEFAULT_CFG = {
-    "ellipsis"          : "\u2026",
-    "inf_string"        : "\u221e",
-    "nan_string"        : "NaN",
-    "precision_max"     : "6",
-    "precision_min"     : "1",
+    "ellipsis"          : u("\u2026"),
+    "inf_string"        : u("\u221e"),
+    "nan_string"        : u("NaN"),
+    "precision_max"     : u("6"),
+    "precision_min"     : u("1"),
     "scientific_max"    : 1e-8,
     "scientific_min"    : 1e+12,
-    "separator"         : " ",
-    "show_cursor"       : "False",
-    "show_footer"       : "True",
-    "show_header"       : "True",
-    "str_width_max"     : "32",
-    "str_width_min"     : "4",
+    "separator"         : u(" "),
+    "show_cursor"       : False,
+    "show_footer"       : True,
+    "show_header"       : True,
+    "str_width_max"     : u("32"),
+    "str_width_min"     : u("4"),
     }
 
 #-------------------------------------------------------------------------------
@@ -68,8 +79,8 @@ def as_bool(value):
     if isinstance(value, bool):
         return value
 
-    if isinstance(value, str):
-        lower = value.lower()
+    if isinstance(value, (str, unicode)):
+        lower = str(value).lower()
         if lower == "true":
             return True
         elif lower == "false":
@@ -473,6 +484,7 @@ class GridView:
         self.__show_cursor = as_bool(self.__cfg["show_cursor"])
 
         self.__screen = None
+        self.__encoding = None
         self.searchTerm = None
         self.flash = None
 
@@ -541,8 +553,9 @@ class GridView:
         self.__set_geometry()
 
 
-    def set_screen(self, scr):
+    def set_screen(self, scr, encoding):
         self.__screen = scr
+        self.__encoding = encoding
 
 
     def __set_geometry(self):
@@ -763,7 +776,8 @@ class GridView:
 
         def write(string, attr):
             length = width - x - (1 if y == height - 1 else 0)
-            self.__screen.addnstr(y, x, string, length, attr)
+            self.__screen.addnstr(
+                y, x, string.encode(self.__encoding), length, attr)
             return len(string)
 
         num_frozen  = self.__num_frozen
@@ -967,7 +981,7 @@ def show_model(model, cfg={}, num_frozen=0):
         curses.noecho()
         curses.cbreak()
         scr.keypad(1)
-        view.set_screen(scr)
+        view.set_screen(scr, locale.getpreferredencoding())
         view.show()
     finally:
         curses.nocbreak()
