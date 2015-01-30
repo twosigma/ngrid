@@ -3,7 +3,7 @@ from   os.path import abspath, dirname, join
 
 here = abspath(dirname(__file__))
 
-with open(join(here, 'DESCRIPTION.rst'), encoding='utf-8') as file:
+with open(join(here, 'DESCRIPTION.rst')) as file:
     long_description = file.read()
 
 setup(
@@ -30,7 +30,7 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
 
-    install_requires=['pytz', 'numpy'],
+    install_requires=['numpy', 'pandas', 'pytz', 'six'],
     extras_require = {
         'dev': [''],
         'test': [''],
@@ -43,7 +43,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'ngrid=ngrid:main',
+            'ngrid=ngrid.main:main',
         ],
     },
 )
