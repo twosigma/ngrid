@@ -7,6 +7,5 @@
 - Add __repr__ to formatters.
 - Comment formatters.
 - Parse datetimes in CSV files?
-- Fix Unicode in Python 2.7
 - change types dynamically in DelimitedFileModel
 
