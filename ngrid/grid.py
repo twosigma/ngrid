@@ -56,12 +56,12 @@ DEFAULT_CFG = {
     "nan_string"        : u("NaN"),
     "precision_max"     : u("6"),
     "precision_min"     : u("1"),
-    "scientific_max"    : 1e-8,
-    "scientific_min"    : 1e+12,
+    "scientific_max"    : u("1e-8"),
+    "scientific_min"    : u("1e+12"),
     "separator"         : u(" "),
-    "show_cursor"       : False,
-    "show_footer"       : True,
-    "show_header"       : True,
+    "show_cursor"       : u("False"),
+    "show_footer"       : u("True"),
+    "show_header"       : u("True"),
     "str_width_max"     : u("32"),
     "str_width_min"     : u("4"),
     }
@@ -156,7 +156,8 @@ def get_default_formatter(type, values, cfg={}):
         abs_vals = abs(vals)
         max_val = abs_vals.max()
         if (max_val == 0 
-            or cfg["scientific_max"] < max_val < cfg["scientific_min"]):
+            or float(cfg["scientific_max"]) < max_val 
+                 < float(cfg["scientific_min"])):
             fmt = formatters.FloatFormatter
             size = 1 if len(vals) == 0 else get_size(max_val)
         else:
@@ -489,7 +490,6 @@ class GridView:
         self.searchTerm = None
         self.flash = None
 
-        # FIXME: These movement methods needs to be CLEANED UP.
         self.keymap = { 
             ord('h')        : lambda: self.__show_help(),
 
@@ -518,15 +518,15 @@ class GridView:
             curses.KEY_END  : lambda: self.__move("bottom", 0),
             curses.KEY_SELECT:lambda: self.__move("bottom", 0),
 
-            # FIXME: Not implemented.
-            # ord('F')        : lambda: self.__tail(),
+          # FIXME: Search currently not working.
+          # ord('F')        : lambda: self.__tail(),
 
-            # ord('/')        : lambda: self.__do_search(1),
-            # ord('?')        : lambda: self.__do_search(-1),
-            # ord('n')        : lambda: self._nextSearchOccurrence(+1),
-            # ord('N')        : lambda: self._nextSearchOccurrence(-1),
-            # ord('c')        : lambda: self._nextSearchOccurrence(+1, scanToColumn=True),
-            # ord('C')        : lambda: self._nextSearchOccurrence(-1, scanToColumn=True),
+          # ord('/')        : lambda: self.__do_search(1),
+          # ord('?')        : lambda: self.__do_search(-1),
+          # ord('n')        : lambda: self._nextSearchOccurrence(+1),
+          # ord('N')        : lambda: self._nextSearchOccurrence(-1),
+          # ord('c')        : lambda: self._nextSearchOccurrence(+1, scanToColumn=True),
+          # ord('C')        : lambda: self._nextSearchOccurrence(-1, scanToColumn=True),
 
             curses.KEY_IC
                             : lambda: self.__toggle_cursor(),
@@ -926,15 +926,15 @@ class GridView:
             "  <                  Increase precision of column at cursor",
             "  >                  Decrease precision of column at cursor",
             "",
-            # "*                             SEARCHING",
-            # "",
-            # " /pattern            Search forward for next matching line",
-            # " ?pattern            Search backward for previous matching line",
-            # " n                   Repeat previous search forwards",
-            # " N                   Repeat previous search backwards",
-            # " c                   Search forwards and scan to matching column",
-            # " C                   Search backwards and scan to matching column",
-            # "",
+          # "*                             SEARCHING",
+          # "",
+          # " /pattern            Search forward for next matching line",
+          # " ?pattern            Search backward for previous matching line",
+          # " n                   Repeat previous search forwards",
+          # " N                   Repeat previous search backwards",
+          # " c                   Search forwards and scan to matching column",
+          # " C                   Search backwards and scan to matching column",
+          # "",
             "",
             "Press any key when done.",
         ]
