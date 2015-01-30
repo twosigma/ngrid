@@ -50,7 +50,7 @@ def main():
     parser.add_option(
         "-D", "--dataframe",
         action="store_true", dest="dataframe", default=False,
-        help=("load input as dataframe"))
+        help=("load input into dataframe"))
 
     options, args = parser.parse_args()
 
