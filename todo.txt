@@ -16,6 +16,7 @@ Cleanups:
 
 Possible additional features:
 
+- Adjust number of frozen columns interactively.
 - Fix search.
 - Jump to column by name.
 - Datetime support.
