@@ -1,13 +1,13 @@
 - Rename header -> title in columns.
-- change types dynamically in DelimitedFileModel
 - Factor out controller.
 - Fix search.
 - Jump to column by name.
 - Datetime support.
+- Timezone support. (?)
 - Revamp keymap.
 - Update help to match keymap.
-- Timezone support. (?)
 - Add __repr__ to formatters.
 - Comment formatters.
 - Parse datetimes in CSV files?
-- Fix Unicode in Python 2.7.
+- Fix Unicode in Python 2.7
+- change types dynamically in DelimitedFileModel
