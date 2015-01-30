@@ -16,14 +16,14 @@ from   .datetime import ensure_datetime
 
 class BoolFormatter:
 
-    def __init__(self, true_str, false_str, pad_left=False):
-        width = max(len(true_str), len(false_str))
-        true_str = text.pad(true_str, width, left=pad_left)
-        false_str = text.pad(false_str, width, left=pad_left)
+    def __init__(self, true, false, size=None, pad_left=False):
+        if size is None:
+            size = max(len(true), len(false))
 
-        self.__true_str         = true_str
-        self.__false_str        = false_str
-        self.__width            = width
+        self.__true     = true
+        self.__false    = false
+        self.__size     = size
+        self.__pad_left = pad_left
 
 
     @property
@@ -31,7 +31,26 @@ class BoolFormatter:
         """
         The width of a formatted value.
         """
-        return self.__width
+        return self.__size
+
+
+    @property
+    def size(self):
+        return self.__size
+
+
+    @property
+    def pad_left(self):
+        return self.__pad_left
+
+
+    def changing(self, **kw_args):
+        args = dict(
+            size    =self.__size,
+            pad_left=self.__pad_left,
+            )
+        args.update(kw_args)
+        return self.__class__(self.__true, self.__false, **args)
 
 
     def format(self, value):
@@ -41,7 +60,12 @@ class BoolFormatter:
         @type value
           `float`
         """
-        return self.__true_str if value else self.__false_str
+        return text.palide(
+            self.__true if value else self.__false, self.__size,
+            ellipsis="",
+            pad     =" ",
+            position=1.0,
+            left    =self.__pad_left)
 
 
     __call__ = format
@@ -564,8 +588,9 @@ class DatetimeFormatter:
         @type value
           UTC `datetime`.
         """
-        return format(value, self.__spec)
-
+        result = format(value, self.__spec)
+        return result
+        
 
     def __call__(self, value):
         """

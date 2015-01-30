@@ -16,6 +16,7 @@ import locale
 from   math import floor, ceil, log10, isnan, isinf
 import os
 import re
+import six
 from   six import u
 import sys
 
@@ -79,7 +80,7 @@ def as_bool(value):
     if isinstance(value, bool):
         return value
 
-    if isinstance(value, (str, unicode)):
+    if isinstance(value, (str, six.text_type)):
         lower = str(value).lower()
         if lower == "true":
             return True
@@ -186,7 +187,7 @@ def get_default_formatter(type, values, cfg={}):
         return formatters.StrFormatter(width, ellipsis=cfg["ellipsis"])
 
     elif type is bool:
-        return formatters.BoolFormatter("T", "F")
+        return formatters.BoolFormatter("TRUE", "FALSE", size=1, pad_left=True)
 
     elif type is datetime:
         # FIXME: Use which datetime format by default?
@@ -490,28 +491,19 @@ class GridView:
 
         # FIXME: These movement methods needs to be CLEANED UP.
         self.keymap = { 
-            ord('p')    : lambda: self.__move_to(0),
             ord('g')    : lambda: self.__move_to(0),
             ord('P')    : lambda: (self.__move_to(0), self.__move_to_col(0)),
             262         : lambda: self.__move("top", 0), # Home
             362         : lambda: self.__move("top", 0), # Home
 
-            ord('e')    : lambda: self.__move_by(1),
-            ord('j')    : lambda: self.__move_by(1),
             ord('\n')   : lambda: self.__move_by(1),
             258         : lambda: self.__move(+1, 0), # Down arrow
 
-            ord('y')    : lambda: self.__move_by(-1),
-            ord('k')    : lambda: self.__move_by(-1),
             259         : lambda: self.__move(-1, 0), # Up arrow
 
             ord(' ')    : lambda: self.__move_by(self.__num_rows),
-            ord('f')    : lambda: self.__move_by(self.__num_rows),
-            ord('z')    : lambda: self.__move_by(self.__num_rows),
             338         : lambda: self.__move_by(self.__num_rows), # PgDn
 
-            ord('b')    : lambda: self.__move_by(-self.__num_rows),
-            ord('w')    : lambda: self.__move_by(-self.__num_rows),
             339         : lambda: self.__move_by(-self.__num_rows), # PgUp
 
             ord('d')    : lambda: self.__move_by(self.__num_rows / 2),
