@@ -1,24 +1,34 @@
+Before release:
+- Update README.md.
+- Choose index column width better.
+- Move right/left one screen.
+
+--------------------------------------------------------------------------------
+
+Cleanups:
 - Rename header -> title in columns.
-- Factor out controller.
-- Fix search.
-- Jump to column by name.
-- Datetime support.
-- Timezone support. (?)
 - Add __repr__ to formatters.
 - Comment formatters.
-- Parse datetimes in CSV files?
-- change types dynamically in DelimitedFileModel
-- Choose index column width better.
+- Change types dynamically in DelimitedFileModel (factor out logic?).
+- Factor out controller.
 
 --------------------------------------------------------------------------------
 
 Possible additional features:
 
+- Fix search.
+- Jump to column by name.
+- Datetime support.
+- Timezone support. (?)
+- Parse datetimes in CSV files?
 - Show or hide a column.
 - Rearrange columns.
 - Toggle between normal and scientific notation.
 - Cycle / toggle among datetime formats.
 - Config file for interactive ngrid.
-- Load pickled Pandas dataframes automatically.
+- Load pickled Pandas dataframes automatically, other formats too?
 - Display df multi-indexes as IPython notebook does.
+- Show column information (type, stats?).
+- Highlight outliers in a column.
+- Filter rows.
 
