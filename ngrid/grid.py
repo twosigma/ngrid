@@ -491,55 +491,56 @@ class GridView:
 
         # FIXME: These movement methods needs to be CLEANED UP.
         self.keymap = { 
-            ord('g')    : lambda: self.__move_to(0),
-            ord('P')    : lambda: (self.__move_to(0), self.__move_to_col(0)),
-            262         : lambda: self.__move("top", 0), # Home
-            362         : lambda: self.__move("top", 0), # Home
+            ord('h')        : lambda: self.__show_help(),
 
-            ord('\n')   : lambda: self.__move_by(1),
-            258         : lambda: self.__move(+1, 0), # Down arrow
+            ord('g')        : lambda: self.__move_to(0),
+            ord('P')        : lambda: (self.__move_to(0), self.__move_to_col(0)),
+            curses.KEY_HOME : lambda: self.__move("top", 0),
+            curses.KEY_FIND : lambda: self.__move("top", 0),
 
-            259         : lambda: self.__move(-1, 0), # Up arrow
+            ord('\n')       : lambda: self.__move_by(+1),
+            curses.KEY_DOWN : lambda: self.__move(+1, 0), 
 
-            ord(' ')    : lambda: self.__move_by(self.__num_rows),
-            338         : lambda: self.__move_by(self.__num_rows), # PgDn
+            curses.KEY_UP   : lambda: self.__move(-1, 0), 
 
-            339         : lambda: self.__move_by(-self.__num_rows), # PgUp
+            ord(' ')        : lambda: self.__move_by( self.__num_rows),
+            curses.KEY_NPAGE: lambda: self.__move_by( self.__num_rows),
 
-            ord('d')    : lambda: self.__move_by(self.__num_rows / 2),
-            ord('u')    : lambda: self.__move_by(-self.__num_rows / 2),
+            curses.KEY_PPAGE: lambda: self.__move_by(-self.__num_rows),
 
-            260         : lambda: self.__move(0, -1), # Left arrow
-            261         : lambda: self.__move(0, +1), # Right arrow
+            ord('d')        : lambda: self.__move_by( self.__num_rows / 2),
+            ord('u')        : lambda: self.__move_by(-self.__num_rows / 2),
 
-            ord('G')    : lambda: self.__move_to_end(),
-            360         : lambda: self.__move("bottom", 0), # End
-            385         : lambda: self.__move("bottom", 0), # End
+            curses.KEY_LEFT : lambda: self.__move(0, -1),
+            curses.KEY_RIGHT: lambda: self.__move(0, +1),
+
+            ord('G')        : lambda: self.__move_to_end(),
+            curses.KEY_END  : lambda: self.__move("bottom", 0),
+            curses.KEY_SELECT:lambda: self.__move("bottom", 0),
 
             # FIXME: Not implemented.
-            # ord('F')    : lambda: self.__tail(),
+            # ord('F')        : lambda: self.__tail(),
 
-            ord('/')    : lambda: self.__do_search(1),
-            ord('?')    : lambda: self.__do_search(-1),
-            ord('n')    : lambda: self._nextSearchOccurrence(1),
-            ord('N')    : lambda: self._nextSearchOccurrence(-1),
-            ord('c')    : lambda: self._nextSearchOccurrence(1, scanToColumn=True),
-            ord('C')    : lambda: self._nextSearchOccurrence(-1, scanToColumn=True),
-            ord('h')    : lambda: self.__show_help(),
+            # ord('/')        : lambda: self.__do_search(1),
+            # ord('?')        : lambda: self.__do_search(-1),
+            # ord('n')        : lambda: self._nextSearchOccurrence(+1),
+            # ord('N')        : lambda: self._nextSearchOccurrence(-1),
+            # ord('c')        : lambda: self._nextSearchOccurrence(+1, scanToColumn=True),
+            # ord('C')        : lambda: self._nextSearchOccurrence(-1, scanToColumn=True),
 
             curses.KEY_IC
-                        : lambda: self.__toggle_cursor(),
-            ord('~')    : lambda: self.__toggle_cursor(),
-            ord('|')    : lambda: self.__toggle_sep(),
-            ord('H')    : lambda: self.__toggle_header(),
-            ord('F')    : lambda: self.__toggle_footer(),
+                            : lambda: self.__toggle_cursor(),
+            ord('~')        : lambda: self.__toggle_cursor(),
+            ord('|')        : lambda: self.__toggle_sep(),
+            ord('H')        : lambda: self.__toggle_header(),
+            ord('F')        : lambda: self.__toggle_footer(),
 
-            ord(',')    : lambda: self.__change_size(-1),
-            ord('.')    : lambda: self.__change_size(+1),
-            ord('<')    : lambda: self.__change_precision(-1),
-            ord('>')    : lambda: self.__change_precision(+1),
+            ord(',')        : lambda: self.__change_size(-1),
+            ord('.')        : lambda: self.__change_size(+1),
+            ord('<')        : lambda: self.__change_precision(-1),
+            ord('>')        : lambda: self.__change_precision(+1),
 
-            410         : lambda: self.__set_geometry() # Window resize
+            curses.KEY_RESIZE:lambda: self.__set_geometry() # Window resize
             }
 
         self.__set_geometry()
@@ -887,40 +888,56 @@ class GridView:
 
 
     def __show_help(self):
-        bar = "-"*71
-        content = ["",
-                   "*                       SUMMARY OF NGRID COMMANDS",
-                   "",
-                   "  h                  Display this help",
-                   "  q Q                Exit",
-                   bar,
-                   "",
-                   "*                              MOVING",
-                   "",
-                   "  e j DownArrow RET  Forward  one line",
-                   "  y k UpArrow        Backward one line",
-                   "  f z PgDn SPACE     Forward  one window",
-                   "  b w PgUp           Backward one window",
-                   "  d                  Forward  one half-window",
-                   "  u                  Backward one half-window",
-                   "  p g Home           Jump to first row",
-                   "  P                  Jump to first row and leftmost column",
-                   "  G                  Jump to last row of file",
-                   "  End                Jump to last row read in so far",
-                   "  F                  Forward forever; like \"tail -f\" (not implemented)",
-                   bar,
-                   "",
-                   "*                             SEARCHING",
-                   "",
-                   " /pattern            Search forward for next matching line",
-                   " ?pattern            Search backward for previous matching line",
-                   " n                   Repeat previous search forwards",
-                   " N                   Repeat previous search backwards",
-                   " c                   Search forwards and scan to matching column",
-                   " C                   Search backwards and scan to matching column",
-                   "",
-                   "",
-                   "Press any key when done."]
+        bar = "-" * self.__screen_width
+        content = [
+            "",
+            "*                       SUMMARY OF NGRID COMMANDS",
+            "",
+            "  h                  Display this help",
+            "  q Q                Exit",
+            "",
+            bar,
+            "",
+            "*                              MOVING",
+            "",
+            "  DOWN, RETURN       Forward  one line",
+            "  UP                 Backward one line",
+            "  PGDN, SPACE        Forward  one window",
+            "  PGUP               Backward one window",
+            "  d                  Forward  one half-window",
+            "  u                  Backward one half-window",
+            "  HOME, g            Jump to first row",
+            "  P                  Jump to first row and column",
+            "  G                  Jump to last row of file",
+            "  END                Jump to last row read so far",
+          # "  F                  Forward forever; like \"tail -f\" (not implemented)",
+            "",
+            bar,
+            "",
+            "*                            CURSOR & DISPLAY",
+            "",
+            "  |                  Cycle column separator",
+            "  H                  Toggle header",
+            "  F                  Toggle footer",
+            "",
+            "  INSERT, ~          Toggle cursor",
+            "  ,                  Increase width of column at cursor",
+            "  .                  Decrease width of column at cursor",
+            "  <                  Increase precision of column at cursor",
+            "  >                  Decrease precision of column at cursor",
+            "",
+            # "*                             SEARCHING",
+            # "",
+            # " /pattern            Search forward for next matching line",
+            # " ?pattern            Search backward for previous matching line",
+            # " n                   Repeat previous search forwards",
+            # " N                   Repeat previous search backwards",
+            # " c                   Search forwards and scan to matching column",
+            # " C                   Search backwards and scan to matching column",
+            # "",
+            "",
+            "Press any key when done.",
+        ]
 
         while True:
             self.__screen.clear()
@@ -935,7 +952,7 @@ class GridView:
                 width = self.__screen_width if i < self.__screen_height-1 else self.__screen_width - 1
                 self.__screen.addstr(i, 0, line[:width], mode)
 
-            if self.__screen.getch() == 410:
+            if self.__screen.getch() == curses.KEY_RESIZE:
                 self.__set_geometry()
                 self.__screen.getch() # extra -1
             else:
