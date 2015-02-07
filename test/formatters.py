@@ -85,6 +85,20 @@ class IntFormatterTest(unittest.TestCase):
         self.assertEqual('-99999999999999999998', fmt(int(-1e+20) + 2))
 
 
+    def test_pad(self):
+        fmt = IntFormatter(4, pad='0')
+        self.assertEqual(' 0000', fmt(0))
+        self.assertEqual(' 0001', fmt(1))
+        self.assertEqual('-0001', fmt(-1))
+        self.assertEqual(' 0999', fmt(999))
+        self.assertEqual('-9999', fmt(-9999))
+        self.assertEqual('#####', fmt(10000))
+
+        fmt = IntFormatter(6, pad='*')
+        self.assertEqual(' ***100', fmt(100))
+        self.assertEqual('***-10', fmt(-100))
+
+
 
 #-------------------------------------------------------------------------------
 
