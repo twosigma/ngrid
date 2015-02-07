@@ -16,7 +16,7 @@ from   .datetime import ensure_datetime
 
 class BoolFormatter:
 
-    def __init__(self, true, false, size=None, pad_left=False):
+    def __init__(self, true='True', false='False', size=None, pad_left=False):
         if size is None:
             size = max(len(true), len(false))
 
@@ -144,10 +144,16 @@ class IntFormatter:
         if len(result) > self.__size:
             # Doesn't fit.
             return "#" * self.__width
-        if self.__sign == "-":
-            result = ("-" if value < 0 else " ") + result
-        elif self.__sign == "+":
-            result = ("-" if value < 0 else "+") + result
+
+        if self.__sign in "-+":
+            sign = "-" if value < 0 else "+" if self.__sign == "+" else " "
+            try:
+                cut = result.rindex(" ") + 1
+            except ValueError:
+                result = sign + result
+            else:
+                result = result[: cut] + sign + result[cut :]
+
         return result
 
 
