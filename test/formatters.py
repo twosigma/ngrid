@@ -55,50 +55,54 @@ class IntFormatterTest(unittest.TestCase):
 
     def test_default(self):
         fmt = IntFormatter(4)
-        self.assertEqual('    0', fmt(0))
-        self.assertEqual('    1', fmt(1))
-        self.assertEqual(' 9999', fmt(9999))
-        self.assertEqual('#####', fmt(10000))
-        self.assertEqual('   -1', fmt(-1))
-        self.assertEqual('  -10', fmt(-10))
-        self.assertEqual('-9999', fmt(-9999))
+        self.assertEqual('    0', fmt(     0))
+        self.assertEqual('    1', fmt(     1))
+        self.assertEqual(' 9999', fmt(  9999))
+        self.assertEqual('#####', fmt( 10000))
+        self.assertEqual('   -1', fmt(    -1))
+        self.assertEqual('  -10', fmt(   -10))
+        self.assertEqual('-9999', fmt( -9999))
         self.assertEqual('#####', fmt(-10000))
 
         self.assertEqual('    1', fmt(True))
         self.assertEqual('    0', fmt(False))
 
         self.assertEqual(' 1000', fmt(1.0e+3))
+        self.assertEqual('  999', fmt( 999.499))
+        self.assertEqual(' 1000', fmt( 999.5))
+        self.assertEqual(' -999', fmt(-999.499))
+        self.assertEqual('-1000', fmt(-999.5))
 
 
     def test_size(self):
         fmt = IntFormatter(1)
-        self.assertEqual(' 4', fmt(4))
-        self.assertEqual('-6', fmt(-6))
+        self.assertEqual(' 4', fmt(  4))
+        self.assertEqual('-6', fmt( -6))
         self.assertEqual('##', fmt(-10))
 
         fmt = IntFormatter(20)
-        self.assertEqual('                    0', fmt(0))
+        self.assertEqual('                    0', fmt( 0))
         self.assertEqual('                   -1', fmt(-1))
-        self.assertEqual(' 10000000000000000000', fmt(1e+19))
+        self.assertEqual(' 10000000000000000000', fmt( 1e+19))
         self.assertEqual('-10000000000000000000', fmt(-1e+19))
-        self.assertEqual(' 99999999999999999999', fmt(int(1e+20) - 1))
+        self.assertEqual(' 99999999999999999999', fmt(int( 1e+20) - 1))
         self.assertEqual('-99999999999999999998', fmt(int(-1e+20) + 2))
 
 
     def test_pad(self):
         fmt = IntFormatter(4, pad=' ')
-        self.assertEqual('    0', fmt(0))
-        self.assertEqual('    1', fmt(1))
-        self.assertEqual('   -1', fmt(-1))
-        self.assertEqual('  999', fmt(999))
+        self.assertEqual('    0', fmt(    0))
+        self.assertEqual('    1', fmt(    1))
+        self.assertEqual('   -1', fmt(   -1))
+        self.assertEqual('  999', fmt(  999))
         self.assertEqual('-9999', fmt(-9999))
         self.assertEqual('#####', fmt(10000))
 
         fmt = IntFormatter(4, pad='0')
-        self.assertEqual(' 0000', fmt(0))
-        self.assertEqual(' 0001', fmt(1))
-        self.assertEqual('-0001', fmt(-1))
-        self.assertEqual(' 0999', fmt(999))
+        self.assertEqual(' 0000', fmt(    0))
+        self.assertEqual(' 0001', fmt(    1))
+        self.assertEqual('-0001', fmt(   -1))
+        self.assertEqual(' 0999', fmt(  999))
         self.assertEqual('-9999', fmt(-9999))
         self.assertEqual('#####', fmt(10000))
 
@@ -106,28 +110,56 @@ class IntFormatterTest(unittest.TestCase):
     def test_sign(self):
         fmt = IntFormatter(4, sign="-")
         self.assertEqual(5, fmt.width)
-        self.assertEqual('    0', fmt(0))
-        self.assertEqual('   -1', fmt(-1))
-        self.assertEqual(' 1000', fmt(1000))
+        self.assertEqual('    0', fmt(    0))
+        self.assertEqual('   -1', fmt(   -1))
+        self.assertEqual(' 1000', fmt( 1000))
         self.assertEqual('-1000', fmt(-1000))
         self.assertEqual('#####', fmt(10000))
 
         fmt = IntFormatter(4, sign="+")
         self.assertEqual(5, fmt.width)
-        self.assertEqual('   +0', fmt(0))
-        self.assertEqual('   -1', fmt(-1))
-        self.assertEqual('+1000', fmt(1000))
+        self.assertEqual('   +0', fmt(    0))
+        self.assertEqual('   -1', fmt(   -1))
+        self.assertEqual('+1000', fmt( 1000))
         self.assertEqual('-1000', fmt(-1000))
         self.assertEqual('#####', fmt(10000))
 
         fmt = IntFormatter(4, sign=None)
         self.assertEqual(4, fmt.width)
-        self.assertEqual('   0', fmt(0))
-        self.assertEqual('   1', fmt(1))
-        self.assertEqual('####', fmt(-1))
-        self.assertEqual('1000', fmt(1000))
+        self.assertEqual('   0', fmt(    0))
+        self.assertEqual('   1', fmt(    1))
+        self.assertEqual('####', fmt(   -1))
+        self.assertEqual('1000', fmt( 1000))
         self.assertEqual('####', fmt(-1000))
         self.assertEqual('####', fmt(10000))
+
+
+
+#-------------------------------------------------------------------------------
+
+POS_INF = float("+Inf")
+NEG_INF = float("-Inf")
+NAN = float("NaN")
+
+class FloatFormatterTest(unittest.TestCase):
+
+    def test_default(self):
+        fmt = FloatFormatter(4, 2)
+        self.assertEqual('    0.00', fmt(      0.0  ))
+        self.assertEqual('    1.00', fmt(      1.0  ))
+        self.assertEqual('   -1.00', fmt(     -1.0  ))
+        self.assertEqual('   12.34', fmt(     12.344))
+        self.assertEqual('   12.34', fmt(     12.3449999999))
+        self.assertEqual('   12.35', fmt(     12.345))
+        self.assertEqual('  -12.34', fmt(    -12.344))
+        self.assertEqual('  -12.35', fmt(    -12.345))
+        self.assertEqual(' 9999.99', fmt(   9999.99 ))
+        self.assertEqual('-9999.99', fmt(  -9999.99 ))
+        self.assertEqual('########', fmt(   9999.999))
+        self.assertEqual('########', fmt(  -9999.999))
+        self.assertEqual('     NaN', fmt(NAN))
+        self.assertEqual('     Inf', fmt(POS_INF))
+        self.assertEqual('    -Inf', fmt(NEG_INF))
 
 
 

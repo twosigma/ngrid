@@ -86,7 +86,7 @@ class IntFormatter:
           "-" for negative sign only, "+" for both, `None` for none.
         """
         assert size >= 0
-        assert pad in (" ", "0")
+        assert pad in "0 "
         assert sign in (None, "-", "+")
           
         width = size
@@ -165,6 +165,10 @@ class IntFormatter:
         """
         Converts a value to an int and formats it.
         """
+        try:
+            value = round(value)
+        except TypeError:
+            pass
         return self.format(int(value))
 
 
@@ -179,10 +183,10 @@ class FloatFormatter:
         @param size
           The number of digits for the integral part.
         @param precision
-          The number of digits for the fracitonal part, or `None` to suppress
+          The number of digits for the fractional part, or `None` to suppress
           the decimal point.
         @param pad
-          Pad character for the integral part.
+          Pad character for the integral part.  May be " " or "0".
         @param sign
           "-" for negative sign only, "+" for both, `None` for none.
         @param point
@@ -190,15 +194,15 @@ class FloatFormatter:
         """
         assert size >= 0
         assert precision is None or precision >= 0
-        assert len(pad) == 1
+        assert pad in "0 "
         assert sign in (None, "-", "+")
 
         width = size
         if precision is not None:
             width += len(point) + precision
-        nan_str = text.pad(nan_str.strip()[: width], width, left=True)
-        inf_str = text.pad(inf_str.strip()[: width], width, left=True)
-        if sign in ("-", "+"):
+        assert len(nan_str) <= width
+        assert len(inf_str) <= width
+        if sign in "-+":
             width += 1
 
         self.__size         = size
@@ -285,9 +289,10 @@ class FloatFormatter:
                 return result
 
         if math.isnan(value):
-            result = add_sign(self.__nan_str)
+            result = text.pad(self.__nan_str, self.__width, pad=" ", left=True)
         elif math.isinf(value):
-            result = add_sign(self.__inf_str)
+            result = text.pad(
+                add_sign(self.__inf_str), self.__width, pad=" ", left=True)
         else:
             precision = 0 if self.__precision is None else self.__precision
             rnd_value = round(value, precision)
@@ -330,7 +335,7 @@ class ScientificFloatFormatter:
         @param size
           The number of digits for the exponent.
         @param precision
-          The number of digits for the fracitonal part, or `None` to suppress
+          The number of digits for the fractional part, or `None` to suppress
           the decimal point.
         @param pad
           Pad character for the integral part.
