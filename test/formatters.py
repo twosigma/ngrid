@@ -86,6 +86,14 @@ class IntFormatterTest(unittest.TestCase):
 
 
     def test_pad(self):
+        fmt = IntFormatter(4, pad=' ')
+        self.assertEqual('    0', fmt(0))
+        self.assertEqual('    1', fmt(1))
+        self.assertEqual('   -1', fmt(-1))
+        self.assertEqual('  999', fmt(999))
+        self.assertEqual('-9999', fmt(-9999))
+        self.assertEqual('#####', fmt(10000))
+
         fmt = IntFormatter(4, pad='0')
         self.assertEqual(' 0000', fmt(0))
         self.assertEqual(' 0001', fmt(1))
@@ -94,9 +102,32 @@ class IntFormatterTest(unittest.TestCase):
         self.assertEqual('-9999', fmt(-9999))
         self.assertEqual('#####', fmt(10000))
 
-        fmt = IntFormatter(6, pad='*')
-        self.assertEqual(' ***100', fmt(100))
-        self.assertEqual('***-10', fmt(-100))
+
+    def test_sign(self):
+        fmt = IntFormatter(4, sign="-")
+        self.assertEqual(5, fmt.width)
+        self.assertEqual('    0', fmt(0))
+        self.assertEqual('   -1', fmt(-1))
+        self.assertEqual(' 1000', fmt(1000))
+        self.assertEqual('-1000', fmt(-1000))
+        self.assertEqual('#####', fmt(10000))
+
+        fmt = IntFormatter(4, sign="+")
+        self.assertEqual(5, fmt.width)
+        self.assertEqual('   +0', fmt(0))
+        self.assertEqual('   -1', fmt(-1))
+        self.assertEqual('+1000', fmt(1000))
+        self.assertEqual('-1000', fmt(-1000))
+        self.assertEqual('#####', fmt(10000))
+
+        fmt = IntFormatter(4, sign=None)
+        self.assertEqual(4, fmt.width)
+        self.assertEqual('   0', fmt(0))
+        self.assertEqual('   1', fmt(1))
+        self.assertEqual('####', fmt(-1))
+        self.assertEqual('1000', fmt(1000))
+        self.assertEqual('####', fmt(-1000))
+        self.assertEqual('####', fmt(10000))
 
 
 

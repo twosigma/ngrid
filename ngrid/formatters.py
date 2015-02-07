@@ -81,12 +81,12 @@ class IntFormatter:
         @param size
           The number of digits.
         @param pad
-          Pad character for the integral part.
+          Pad character for the integral part.  May be " " or "0".
         @param sign
           "-" for negative sign only, "+" for both, `None` for none.
         """
         assert size >= 0
-        assert len(pad) == 1
+        assert pad in (" ", "0")
         assert sign in (None, "-", "+")
           
         width = size
@@ -138,21 +138,25 @@ class IntFormatter:
         @type value
           `int`
         """
-        abs_value = abs(value)
-        result = text.pad(
-            str(abs_value), self.__size, pad=self.__pad, left=True)
-        if len(result) > self.__size:
+        sign = (
+            "" if self.__sign is None
+            else "-" if value < 0
+            else "+" if self.__sign == "+"
+            else " ")
+
+        result = str(abs(value))
+        if len(result) > self.__size or value < 0 and self.__sign is None:
             # Doesn't fit.
             return "#" * self.__width
-
-        if self.__sign in "-+":
-            sign = "-" if value < 0 else "+" if self.__sign == "+" else " "
-            try:
-                cut = result.rindex(" ") + 1
-            except ValueError:
-                result = sign + result
-            else:
-                result = result[: cut] + sign + result[cut :]
+        if self.__pad == " ":
+            # Space padding precedes the sign.
+            result = text.pad(
+                sign + result,
+                self.__size + len(sign), pad=self.__pad, left=True)
+        else:
+            # The sign must precede zero padding.
+            result = sign + text.pad(
+                result, self.__size, pad=self.__pad, left=True)
 
         return result
 
