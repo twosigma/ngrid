@@ -296,10 +296,10 @@ class FloatFormatterTest(unittest.TestCase):
 
 #-------------------------------------------------------------------------------
 
-class ScientificFloatFormatterTest(unittest.TestCase):
+class EFloatFormatterTest(unittest.TestCase):
 
     def test_default(self):
-        fmt = ScientificFloatFormatter(2, 2)
+        fmt = EFloatFormatter(2, 2)
         self.assertEqual(9, fmt.width)
         self.assertEqual(' 0.00E+00', fmt(            0.0))
         self.assertEqual(' 1.00E+00', fmt(            1.0))
@@ -342,7 +342,7 @@ class ScientificFloatFormatterTest(unittest.TestCase):
 
 
     def test_size_1(self):
-        fmt = ScientificFloatFormatter(1, 2)
+        fmt = EFloatFormatter(1, 2)
         self.assertEqual(8, fmt.width)
         self.assertEqual(' 0.00E+0', fmt(          0.0))
         self.assertEqual(' 9.95E-1', fmt(          0.995001))
@@ -363,7 +363,7 @@ class ScientificFloatFormatterTest(unittest.TestCase):
 
 
     def test_size_4(self):
-        fmt = ScientificFloatFormatter(4, 2)
+        fmt = EFloatFormatter(4, 2)
         self.assertEqual(11, fmt.width)
         self.assertEqual(' 0.00E+0000', fmt( 0.0))
         self.assertEqual(' 9.95E-0001', fmt( 0.995001))
@@ -373,7 +373,7 @@ class ScientificFloatFormatterTest(unittest.TestCase):
 
 
     def test_precision_none(self):
-        fmt = ScientificFloatFormatter(2, None)
+        fmt = EFloatFormatter(2, None)
         self.assertEqual(6, fmt.width)
         self.assertEqual(' 0E+00', fmt(            0.0))
         self.assertEqual(' 1E+00', fmt(            1.0))
@@ -401,7 +401,7 @@ class ScientificFloatFormatterTest(unittest.TestCase):
 
 
     def test_precision_0(self):
-        fmt = ScientificFloatFormatter(2, 0)
+        fmt = EFloatFormatter(2, 0)
         self.assertEqual(7, fmt.width)
         self.assertEqual(' 0.E+00', fmt(            0.0))
         self.assertEqual(' 1.E+00', fmt(            1.0))
@@ -429,7 +429,7 @@ class ScientificFloatFormatterTest(unittest.TestCase):
 
 
     def test_sign_plus(self):
-        fmt = ScientificFloatFormatter(2, 2, sign="+")
+        fmt = EFloatFormatter(2, 2, sign="+")
         self.assertEqual(9, fmt.width)
         self.assertEqual('+0.00E+00', fmt(            0.0))
         self.assertEqual('+1.00E+00', fmt(            1.0))
@@ -453,7 +453,7 @@ class ScientificFloatFormatterTest(unittest.TestCase):
 
 
     def test_sign_none(self):
-        fmt = ScientificFloatFormatter(2, 2, sign=None)
+        fmt = EFloatFormatter(2, 2, sign=None)
         self.assertEqual(8, fmt.width)
         self.assertEqual('0.00E+00', fmt(            0.0))
         self.assertEqual('1.00E+00', fmt(            1.0))
@@ -477,7 +477,7 @@ class ScientificFloatFormatterTest(unittest.TestCase):
 
 
     def test_point(self):
-        fmt = ScientificFloatFormatter(2, 2, point=",")
+        fmt = EFloatFormatter(2, 2, point=",")
         self.assertEqual(9, fmt.width)
         self.assertEqual(' 0,00E+00', fmt(            0.0))
         self.assertEqual(' 1,00E+00', fmt(            1.0))
@@ -489,7 +489,7 @@ class ScientificFloatFormatterTest(unittest.TestCase):
 
 
     def test_exp(self):
-        fmt = ScientificFloatFormatter(2, 2, exp=" e")
+        fmt = EFloatFormatter(2, 2, exp=" e")
         self.assertEqual(10, fmt.width)
         self.assertEqual(' 0.00 e+00', fmt(            0.0))
         self.assertEqual(' 1.00 e+00', fmt(            1.0))
@@ -501,7 +501,7 @@ class ScientificFloatFormatterTest(unittest.TestCase):
 
 
     def test_nan_str(self):
-        fmt = ScientificFloatFormatter(2, 2, nan_str="INVALID")
+        fmt = EFloatFormatter(2, 2, nan_str="INVALID")
         self.assertEqual(9, fmt.width)
         self.assertEqual(' 0.00E+00', fmt(      0.0  ))
         self.assertEqual('-1.00E+04', fmt(  -9999.99 ))
@@ -510,11 +510,11 @@ class ScientificFloatFormatterTest(unittest.TestCase):
         self.assertEqual('     -Inf', fmt(NEG_INF))
 
         self.assertRaises(
-            Exception, ScientificFloatFormatter, 2, 2, nan_str="INVALID VALUE")
+            Exception, EFloatFormatter, 2, 2, nan_str="INVALID VALUE")
 
 
     def test_nan_str(self):
-        fmt = ScientificFloatFormatter(2, 3, inf_str="INFINITY")
+        fmt = EFloatFormatter(2, 3, inf_str="INFINITY")
         self.assertEqual(10, fmt.width)
         self.assertEqual(' 0.000E+00', fmt(      0.0  ))
         self.assertEqual('-1.000E+04', fmt(  -9999.99 ))
@@ -523,8 +523,7 @@ class ScientificFloatFormatterTest(unittest.TestCase):
         self.assertEqual(' -INFINITY', fmt(NEG_INF))
 
         self.assertRaises(
-            Exception, 
-            ScientificFloatFormatter, 4, 0, inf_str="WAY WAY TOO LARGE")
+            Exception,  EFloatFormatter, 4, 0, inf_str="WAY WAY TOO LARGE")
 
 
 

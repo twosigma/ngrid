@@ -345,9 +345,9 @@ class FloatFormatter:
 
 #-------------------------------------------------------------------------------
 
-class ScientificFloatFormatter:
+class EFloatFormatter:
     """
-    Formatter for floating-point numbers with scientific notation.
+    Formatter for floating-point numbers with scientific 'E' notation.
     """
 
     def __init__(self, size, precision, sign="-", point=".", exp="E",

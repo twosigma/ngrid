@@ -162,7 +162,7 @@ def get_default_formatter(type, values, cfg={}):
             size = 1 if len(vals) == 0 else get_size(max_val)
         else:
             # Use scientific notation for very small or very large.
-            fmt = formatters.ScientificFloatFormatter
+            fmt = formatters.EFloatFormatter
             # Find the number of digits in the exponent.
             size = max(1, int(ceil(log10(floor(abs(log10(max_val)))))))
         # Guess precision.  Try progressively higher precision until we find
