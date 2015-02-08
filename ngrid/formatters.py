@@ -83,7 +83,8 @@ class IntFormatter:
         @param pad
           Pad character for the integral part.  May be " " or "0".
         @param sign
-          "-" for negative sign only, "+" for both, `None` for none.
+          "-" for negative sign only, "+" for both.  If `None`, don't show
+          a sign; only nonnegative numbers may be formatted.
         """
         assert size >= 0
         assert pad in "0 "
@@ -188,7 +189,8 @@ class FloatFormatter:
         @param pad
           Pad character for the integral part.  May be " " or "0".
         @param sign
-          "-" for negative sign only, "+" for both, `None` for none.
+          "-" for negative sign only, "+" for both.  If `None`, don't show
+          a sign; only nonnegative numbers may be formatted.
         @param point
           The decimal point character.
         """
@@ -202,7 +204,7 @@ class FloatFormatter:
             width += len(point) + precision
         assert len(nan_str) <= width
         assert len(inf_str) <= width
-        if sign in "-+":
+        if sign in ("-", "+"):
             width += 1
 
         self.__size         = size
@@ -280,30 +282,45 @@ class FloatFormatter:
         @type value
           `float`
         """
-        def add_sign(result):
-            if self.__sign == "-":
-                return ("-" if value < 0 else " ") + result
-            elif self.__sign == "+":
-                return ("-" if value < 0 else "+") + result
-            else:
-                return result
+        sign = (
+            "" if self.__sign is None
+            else "-" if value < 0
+            else "+" if self.__sign == "+"
+            else " ")
 
         if math.isnan(value):
+            # Not a number.
             result = text.pad(self.__nan_str, self.__width, pad=" ", left=True)
+
         elif math.isinf(value):
-            result = text.pad(
-                add_sign(self.__inf_str), self.__width, pad=" ", left=True)
+            # Infinite value.
+            if value < 0 and self.__sign is None:
+                return "#" * self.__width
+            else:
+                result = text.pad(
+                    sign + self.__inf_str, self.__width, pad=" ", left=True)
+
         else:
+            # "Normal" number.
             precision = 0 if self.__precision is None else self.__precision
             rnd_value = round(value, precision)
             abs_value = abs(rnd_value)
             int_value = int(abs_value)
-            result = add_sign(str(int_value))
-            size = self.__size + (1 if self.__sign in ("-", "+") else 0)
-            if len(result) > size:
+            result = str(int_value)
+            if len(result) > self.__size or self.__sign is None and value < 0:
                 # Doesn't fit.
                 return "#" * self.__width
-            result = text.pad(result, size, pad=self.__pad, left=True)
+
+            if self.__pad == " ":
+                # Space padding precedes the sign.
+                result = text.pad(
+                    sign + result,
+                    self.__size + len(sign), pad=self.__pad, left=True)
+            else:
+                # The sign must precede zero padding.
+                result = sign + text.pad(
+                    result, self.__size, pad=self.__pad, left=True)
+
             if self.__precision is None:
                 pass
             elif self.__precision == 0:
