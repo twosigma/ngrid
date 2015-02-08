@@ -87,7 +87,7 @@ class IntFormatter:
           a sign; only nonnegative numbers may be formatted.
         """
         assert size >= 0
-        assert pad in "0 "
+        assert pad in ("0", " ")
         assert sign in (None, "-", "+")
           
         width = size
@@ -148,8 +148,9 @@ class IntFormatter:
         result = str(abs(value))
         if len(result) > self.__size or value < 0 and self.__sign is None:
             # Doesn't fit.
-            return "#" * self.__width
-        if self.__pad == " ":
+            result =  "#" * self.__width
+
+        elif self.__pad == " ":
             # Space padding precedes the sign.
             result = text.pad(
                 sign + result,
@@ -196,7 +197,7 @@ class FloatFormatter:
         """
         assert size >= 0
         assert precision is None or precision >= 0
-        assert pad in "0 "
+        assert pad in ("0", " ")
         assert sign in (None, "-", "+")
 
         width = size
@@ -292,13 +293,13 @@ class FloatFormatter:
             # Not a number.
             result = text.pad(self.__nan_str, self.__width, pad=" ", left=True)
 
+        elif value < 0 and self.__sign is None:
+            result = "#" * self.__width
+
         elif math.isinf(value):
             # Infinite value.
-            if value < 0 and self.__sign is None:
-                return "#" * self.__width
-            else:
-                result = text.pad(
-                    sign + self.__inf_str, self.__width, pad=" ", left=True)
+            result = text.pad(
+                sign + self.__inf_str, self.__width, pad=" ", left=True)
 
         else:
             # "Normal" number.
@@ -307,7 +308,7 @@ class FloatFormatter:
             abs_value = abs(rnd_value)
             int_value = int(abs_value)
             result = str(int_value)
-            if len(result) > self.__size or self.__sign is None and value < 0:
+            if len(result) > self.__size:
                 # Doesn't fit.
                 return "#" * self.__width
 
@@ -349,16 +350,14 @@ class ScientificFloatFormatter:
     Formatter for floating-point numbers with scientific notation.
     """
 
-    def __init__(self, size, precision, pad=" ", sign="-", point=".",
-                 exp="E", nan_str="NaN", inf_str="Inf"):
+    def __init__(self, size, precision, sign="-", point=".", exp="E",
+                 nan_str="NaN", inf_str="Inf"):
         """
         @param size
           The number of digits for the exponent.
         @param precision
           The number of digits for the fractional part, or `None` to suppress
           the decimal point.
-        @param pad
-          Pad character for the integral part.
         @param sign
           "-" for negative sign only, "+" for both, `None` for none.
         @param point
@@ -368,10 +367,11 @@ class ScientificFloatFormatter:
         """
         assert size > 0
         assert precision is None or precision >= 0
-        assert len(pad) == 1
         assert sign in (None, "-", "+")
 
-        width = 1 + len(point) + precision + len(exp) + 1 + size
+        width = (
+            1 + (0 if precision is None else len(point) + precision)
+            + len(exp) + 1 + size)
         assert len(nan_str) <= width
         assert len(inf_str) <= width
         if sign in ("-", "+"):
@@ -379,7 +379,6 @@ class ScientificFloatFormatter:
 
         self.__size         = size
         self.__precision    = precision
-        self.__pad          = pad
         self.__sign         = sign
         self.__point        = point
         self.__exp          = exp
@@ -398,11 +397,6 @@ class ScientificFloatFormatter:
     @property
     def precision(self):
         return self.__precision
-
-
-    @property
-    def pad(self):
-        return self.__pad
 
 
     @property
@@ -442,7 +436,6 @@ class ScientificFloatFormatter:
         args = dict(
             precision   =self.__precision,
             size        =self.__size,
-            pad         =self.__pad,
             sign        =self.__sign,
             point       =self.__point,
             exp         =self.__exp,
@@ -466,19 +459,28 @@ class ScientificFloatFormatter:
             else " ")
 
         if math.isnan(value):
+            # Not a number.
             result = text.pad(self.__nan_str, self.__width, pad=" ", left=True)
+
+        elif value < 0 and self.__sign is None:
+            # Can't show negative number without sign.
+            result = "#" * self.__width
+
         elif math.isinf(value):
+            # Infinite value.
             result = text.pad(
                 sign + self.__inf_str, self.__width, pad=" ", left=True)
+
         else:
             if value == 0:
                 exp = 0
                 mantissa = 0
             else:
                 abs_value = abs(value)
+                precision = 0 if self.__precision is None else self.__precision
                 rnd_value = round(
                     abs_value,
-                    int(math.ceil(self.__precision - math.log10(abs_value))))
+                    int(math.ceil(precision - math.log10(abs_value))))
                 exp = int(math.floor(math.log10(rnd_value)))
                 mantissa = rnd_value / 10 ** exp
             int_value = int(mantissa)

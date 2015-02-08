@@ -341,6 +341,192 @@ class ScientificFloatFormatterTest(unittest.TestCase):
         self.assertEqual('     -Inf', fmt(NEG_INF))
 
 
+    def test_size_1(self):
+        fmt = ScientificFloatFormatter(1, 2)
+        self.assertEqual(8, fmt.width)
+        self.assertEqual(' 0.00E+0', fmt(          0.0))
+        self.assertEqual(' 9.95E-1', fmt(          0.995001))
+        self.assertEqual(' 1.00E+0', fmt(          0.999501))
+        self.assertEqual('-9.95E-1', fmt(         -0.995001))
+        self.assertEqual('-1.00E+0', fmt(         -0.999501))
+        self.assertEqual(' 9.99E+9', fmt( 9994999999.99))
+        self.assertEqual('-9.99E+9', fmt(-9994999999.99))
+        self.assertEqual('########', fmt( 9995000001.0))
+        self.assertEqual('########', fmt(-9995000001.0))
+        self.assertEqual(' 1.00E-9', fmt(          0.0000000009995001))
+        self.assertEqual('-1.00E-9', fmt(         -0.0000000009995001))
+        self.assertEqual('########', fmt(          0.0000000009994999))
+        self.assertEqual('########', fmt(         -0.0000000009994999))
+        self.assertEqual('     NaN', fmt(NAN))
+        self.assertEqual('     Inf', fmt(POS_INF))
+        self.assertEqual('    -Inf', fmt(NEG_INF))
+
+
+    def test_size_4(self):
+        fmt = ScientificFloatFormatter(4, 2)
+        self.assertEqual(11, fmt.width)
+        self.assertEqual(' 0.00E+0000', fmt( 0.0))
+        self.assertEqual(' 9.95E-0001', fmt( 0.995001))
+        self.assertEqual(' 1.00E+0000', fmt( 0.999501))
+        self.assertEqual(' 1.23E+0110', fmt( 1.23e+110))
+        self.assertEqual('-1.23E-0110', fmt(-1.23e-110))
+
+
+    def test_precision_none(self):
+        fmt = ScientificFloatFormatter(2, None)
+        self.assertEqual(6, fmt.width)
+        self.assertEqual(' 0E+00', fmt(            0.0))
+        self.assertEqual(' 1E+00', fmt(            1.0))
+        self.assertEqual('-1E+00', fmt(           -1.0))
+        self.assertEqual(' 5E-01', fmt(            0.500001))
+        self.assertEqual('-5E-01', fmt(           -0.500001))
+        self.assertEqual('-5E-01', fmt(           -0.4999))
+        self.assertEqual('-1E+00', fmt(           -0.995001))
+        self.assertEqual('-1E+00', fmt(           -0.999501))
+        self.assertEqual(' 1E+03', fmt(         1000.0))
+        self.assertEqual('-1E+03', fmt(        -1000.0))
+        self.assertEqual(' 1E+11', fmt( 123456789012))
+        self.assertEqual('-1E+11', fmt(-123456789012))
+        self.assertEqual(' 2E+11', fmt( 150000000001))
+        self.assertEqual('-2E+11', fmt(-150000000001))
+        self.assertEqual(' 1E-13', fmt(            0.0000000000001234))
+        self.assertEqual('-1E-13', fmt(           -0.0000000000001234))
+        self.assertEqual(' 1E+99', fmt(            1e+99))
+        self.assertEqual('-1E+99', fmt(           -1e+99))
+        self.assertEqual('######', fmt(            9.50001e+99))
+        self.assertEqual('######', fmt(           -9.50001e+99))
+        self.assertEqual('   NaN', fmt(NAN))
+        self.assertEqual('   Inf', fmt(POS_INF))
+        self.assertEqual('  -Inf', fmt(NEG_INF))
+
+
+    def test_precision_0(self):
+        fmt = ScientificFloatFormatter(2, 0)
+        self.assertEqual(7, fmt.width)
+        self.assertEqual(' 0.E+00', fmt(            0.0))
+        self.assertEqual(' 1.E+00', fmt(            1.0))
+        self.assertEqual('-1.E+00', fmt(           -1.0))
+        self.assertEqual(' 5.E-01', fmt(            0.500001))
+        self.assertEqual('-5.E-01', fmt(           -0.500001))
+        self.assertEqual('-5.E-01', fmt(           -0.4999))
+        self.assertEqual('-1.E+00', fmt(           -0.995001))
+        self.assertEqual('-1.E+00', fmt(           -0.999501))
+        self.assertEqual(' 1.E+03', fmt(         1000.0))
+        self.assertEqual('-1.E+03', fmt(        -1000.0))
+        self.assertEqual(' 1.E+11', fmt( 123456789012))
+        self.assertEqual('-1.E+11', fmt(-123456789012))
+        self.assertEqual(' 2.E+11', fmt( 150000000001))
+        self.assertEqual('-2.E+11', fmt(-150000000001))
+        self.assertEqual(' 1.E-13', fmt(            0.0000000000001234))
+        self.assertEqual('-1.E-13', fmt(           -0.0000000000001234))
+        self.assertEqual(' 1.E+99', fmt(            1e+99))
+        self.assertEqual('-1.E+99', fmt(           -1e+99))
+        self.assertEqual('#######', fmt(            9.50001e+99))
+        self.assertEqual('#######', fmt(           -9.50001e+99))
+        self.assertEqual('    NaN', fmt(NAN))
+        self.assertEqual('    Inf', fmt(POS_INF))
+        self.assertEqual('   -Inf', fmt(NEG_INF))
+
+
+    def test_sign_plus(self):
+        fmt = ScientificFloatFormatter(2, 2, sign="+")
+        self.assertEqual(9, fmt.width)
+        self.assertEqual('+0.00E+00', fmt(            0.0))
+        self.assertEqual('+1.00E+00', fmt(            1.0))
+        self.assertEqual('-1.00E+00', fmt(           -1.0))
+        self.assertEqual('+9.95E-01', fmt(            0.995001))
+        self.assertEqual('+1.00E+00', fmt(            0.999501))
+        self.assertEqual('-9.90E-01', fmt(           -0.99))
+        self.assertEqual('+1.00E+03', fmt(       1000.0))
+        self.assertEqual('-1.00E+03', fmt(      -1000.0))
+        self.assertEqual('+1.23E+11', fmt( 123456789012))
+        self.assertEqual('-1.23E+11', fmt(-123456789012))
+        self.assertEqual('+1.24E+11', fmt( 123556789012))
+        self.assertEqual('-1.24E+11', fmt(-123556789012))
+        self.assertEqual('+9.99E+99', fmt(            9.99e+99))
+        self.assertEqual('-9.99E+99', fmt(           -9.99e+99))
+        self.assertEqual('+1.00E-99', fmt(            1.00e-99))
+        self.assertEqual('-1.00E-99', fmt(           -1.00e-99))
+        self.assertEqual('      NaN', fmt(NAN))
+        self.assertEqual('     +Inf', fmt(POS_INF))
+        self.assertEqual('     -Inf', fmt(NEG_INF))
+
+
+    def test_sign_none(self):
+        fmt = ScientificFloatFormatter(2, 2, sign=None)
+        self.assertEqual(8, fmt.width)
+        self.assertEqual('0.00E+00', fmt(            0.0))
+        self.assertEqual('1.00E+00', fmt(            1.0))
+        self.assertEqual('########', fmt(           -1.0))
+        self.assertEqual('9.95E-01', fmt(            0.995001))
+        self.assertEqual('1.00E+00', fmt(            0.999501))
+        self.assertEqual('########', fmt(           -0.99))
+        self.assertEqual('1.00E+03', fmt(       1000.0))
+        self.assertEqual('########', fmt(      -1000.0))
+        self.assertEqual('1.23E+11', fmt( 123456789012))
+        self.assertEqual('########', fmt(-123456789012))
+        self.assertEqual('1.24E+11', fmt( 123556789012))
+        self.assertEqual('########', fmt(-123556789012))
+        self.assertEqual('9.99E+99', fmt(            9.99e+99))
+        self.assertEqual('########', fmt(           -9.99e+99))
+        self.assertEqual('1.00E-99', fmt(            1.00e-99))
+        self.assertEqual('########', fmt(           -1.00e-99))
+        self.assertEqual('     NaN', fmt(NAN))
+        self.assertEqual('     Inf', fmt(POS_INF))
+        self.assertEqual('########', fmt(NEG_INF))
+
+
+    def test_point(self):
+        fmt = ScientificFloatFormatter(2, 2, point=",")
+        self.assertEqual(9, fmt.width)
+        self.assertEqual(' 0,00E+00', fmt(            0.0))
+        self.assertEqual(' 1,00E+00', fmt(            1.0))
+        self.assertEqual('-1,00E+00', fmt(           -1.0))
+        self.assertEqual(' 1,00E+03', fmt(       1000.0))
+        self.assertEqual('-1,00E+03', fmt(      -1000.0))
+        self.assertEqual(' 9,99E+99', fmt(            9.99e+99))
+        self.assertEqual('-9,99E+99', fmt(           -9.99e+99))
+
+
+    def test_exp(self):
+        fmt = ScientificFloatFormatter(2, 2, exp=" e")
+        self.assertEqual(10, fmt.width)
+        self.assertEqual(' 0.00 e+00', fmt(            0.0))
+        self.assertEqual(' 1.00 e+00', fmt(            1.0))
+        self.assertEqual('-1.00 e+00', fmt(           -1.0))
+        self.assertEqual(' 1.00 e+03', fmt(       1000.0))
+        self.assertEqual('-1.00 e+03', fmt(      -1000.0))
+        self.assertEqual(' 9.99 e+99', fmt(            9.99e+99))
+        self.assertEqual('-9.99 e+99', fmt(           -9.99e+99))
+
+
+    def test_nan_str(self):
+        fmt = ScientificFloatFormatter(2, 2, nan_str="INVALID")
+        self.assertEqual(9, fmt.width)
+        self.assertEqual(' 0.00E+00', fmt(      0.0  ))
+        self.assertEqual('-1.00E+04', fmt(  -9999.99 ))
+        self.assertEqual('  INVALID', fmt(NAN))
+        self.assertEqual('      Inf', fmt(POS_INF))
+        self.assertEqual('     -Inf', fmt(NEG_INF))
+
+        self.assertRaises(
+            Exception, ScientificFloatFormatter, 2, 2, nan_str="INVALID VALUE")
+
+
+    def test_nan_str(self):
+        fmt = ScientificFloatFormatter(2, 3, inf_str="INFINITY")
+        self.assertEqual(10, fmt.width)
+        self.assertEqual(' 0.000E+00', fmt(      0.0  ))
+        self.assertEqual('-1.000E+04', fmt(  -9999.99 ))
+        self.assertEqual('       NaN', fmt(NAN))
+        self.assertEqual('  INFINITY', fmt(POS_INF))
+        self.assertEqual(' -INFINITY', fmt(NEG_INF))
+
+        self.assertRaises(
+            Exception, 
+            ScientificFloatFormatter, 4, 0, inf_str="WAY WAY TOO LARGE")
+
+
 
 #-------------------------------------------------------------------------------
 
