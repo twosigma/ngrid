@@ -294,6 +294,53 @@ class FloatFormatterTest(unittest.TestCase):
 
 
 
+#-------------------------------------------------------------------------------
+
+class ScientificFloatFormatterTest(unittest.TestCase):
+
+    def test_default(self):
+        fmt = ScientificFloatFormatter(2, 2)
+        self.assertEqual(9, fmt.width)
+        self.assertEqual(' 0.00E+00', fmt(            0.0))
+        self.assertEqual(' 1.00E+00', fmt(            1.0))
+        self.assertEqual('-1.00E+00', fmt(           -1.0))
+        self.assertEqual(' 9.90E-01', fmt(            0.99))
+        self.assertEqual(' 9.95E-01', fmt(            0.994999))
+        self.assertEqual(' 9.95E-01', fmt(            0.995001))
+        self.assertEqual(' 1.00E+00', fmt(            0.999501))
+        self.assertEqual('-9.90E-01', fmt(           -0.99))
+        self.assertEqual('-9.95E-01', fmt(           -0.994999))
+        self.assertEqual('-9.95E-01', fmt(           -0.995001))
+        self.assertEqual('-1.00E+00', fmt(           -0.999501))
+        self.assertEqual(' 1.00E+03', fmt(       1000.0))
+        self.assertEqual('-1.00E+03', fmt(      -1000.0))
+        self.assertEqual(' 1.23E+11', fmt( 123456789012))
+        self.assertEqual('-1.23E+11', fmt(-123456789012))
+        self.assertEqual(' 1.24E+11', fmt( 123556789012))
+        self.assertEqual('-1.24E+11', fmt(-123556789012))
+        self.assertEqual(' 1.23E-13', fmt(            0.0000000000001234))
+        self.assertEqual('-1.23E-13', fmt(           -0.0000000000001234))
+        self.assertEqual(' 1.24E-13', fmt(            0.000000000000123501))
+        self.assertEqual('-1.24E-13', fmt(           -0.000000000000123501))
+        self.assertEqual(' 9.99E+99', fmt(            9.99e+99))
+        self.assertEqual('-9.99E+99', fmt(           -9.99e+99))
+        self.assertEqual('#########', fmt(            9.996e+99))
+        self.assertEqual('#########', fmt(           -9.996e+99))
+        self.assertEqual('#########', fmt(            1e+100))
+        self.assertEqual('#########', fmt(           -1e+100))
+        self.assertEqual(' 1.00E-99', fmt(            1.00e-99))
+        self.assertEqual(' 1.00E-99', fmt(            0.999501e-99))
+        self.assertEqual('-1.00E-99', fmt(           -1.00e-99))
+        self.assertEqual('-1.00E-99', fmt(           -0.999501e-99))
+        self.assertEqual('#########', fmt(            0.994e-99))
+        self.assertEqual('#########', fmt(           -0.994e-99))
+        self.assertEqual('#########', fmt(            1e-100))
+        self.assertEqual('#########', fmt(           -1e-100))
+        self.assertEqual('      NaN', fmt(NAN))
+        self.assertEqual('      Inf', fmt(POS_INF))
+        self.assertEqual('     -Inf', fmt(NEG_INF))
+
+
 
 #-------------------------------------------------------------------------------
 

@@ -345,6 +345,9 @@ class FloatFormatter:
 #-------------------------------------------------------------------------------
 
 class ScientificFloatFormatter:
+    """
+    Formatter for floating-point numbers with scientific notation.
+    """
 
     def __init__(self, size, precision, pad=" ", sign="-", point=".",
                  exp="E", nan_str="NaN", inf_str="Inf"):
@@ -360,15 +363,17 @@ class ScientificFloatFormatter:
           "-" for negative sign only, "+" for both, `None` for none.
         @param point
           The decimal point character.
+        @param exp
+          The character that introduces the exponent.
         """
-        assert size >= 0
+        assert size > 0
         assert precision is None or precision >= 0
         assert len(pad) == 1
         assert sign in (None, "-", "+")
 
         width = 1 + len(point) + precision + len(exp) + 1 + size
-        nan_str = text.pad(nan_str.strip()[: width], width)
-        inf_str = text.pad(inf_str.strip()[: width], width)
+        assert len(nan_str) <= width
+        assert len(inf_str) <= width
         if sign in ("-", "+"):
             width += 1
 
@@ -454,27 +459,30 @@ class ScientificFloatFormatter:
         @type value
           `float`
         """
-        def add_sign(result):
-            if self.__sign == "-":
-                return ("-" if value < 0 else " ") + result
-            elif self.__sign == "+":
-                return ("-" if value < 0 else "+") + result
-            else:
-                return result
+        sign = (
+            "" if self.__sign is None
+            else "-" if value < 0
+            else "+" if self.__sign == "+"
+            else " ")
 
         if math.isnan(value):
-            result = add_sign(self.__nan_str)
+            result = text.pad(self.__nan_str, self.__width, pad=" ", left=True)
         elif math.isinf(value):
-            result = add_sign(self.__inf_str)
+            result = text.pad(
+                sign + self.__inf_str, self.__width, pad=" ", left=True)
         else:
-            abs_value = abs(value)
-            rnd_value = round(
-                abs_value, 
-                int(math.ceil(self.__precision - math.log10(abs_value))))
-            exp = int(math.floor(math.log10(rnd_value)))
-            mantissa = rnd_value / 10 ** exp
+            if value == 0:
+                exp = 0
+                mantissa = 0
+            else:
+                abs_value = abs(value)
+                rnd_value = round(
+                    abs_value,
+                    int(math.ceil(self.__precision - math.log10(abs_value))))
+                exp = int(math.floor(math.log10(rnd_value)))
+                mantissa = rnd_value / 10 ** exp
             int_value = int(mantissa)
-            result = add_sign(str(int_value))
+            result = sign + str(int_value)
             if self.__precision is None:
                 pass
             elif self.__precision == 0:
@@ -488,7 +496,7 @@ class ScientificFloatFormatter:
             exp = text.pad(str(abs(exp)), self.__size, pad="0", left=True)
             if len(exp) > self.__size:
                 # Doesn't fit.
-                result += "#" * self.__size
+                result = "#" * self.__width
             else:
                 result += exp
         return result
