@@ -516,8 +516,21 @@ class EFloatFormatter:
 
 class StrFormatter:
 
-    def __init__(self, size, ellipsis="...", pad=" ", position=1.0, 
+    def __init__(self, size, ellipsis="...", position=1.0, pad=" ",
                  pad_left=False):
+        """
+        @param size
+          Total length of the formatted string.
+        @param ellipsis
+          Fragment to indicated characters elided from the string.
+        @param position
+          Where to elide characters, between 0.0 for the left side and 1.0
+          for the right side.
+        @param pad
+          Pad character.
+        @param pad_left
+          If true, pad on the left; otherwise, on the right.
+        """
         self.__size     = size
         self.__ellipsis = ellipsis
         self.__pad      = pad

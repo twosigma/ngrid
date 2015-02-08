@@ -282,7 +282,7 @@ class FloatFormatterTest(unittest.TestCase):
         self.assertRaises(Exception, FloatFormatter, 4, 0, nan_str="INVALID")
 
 
-    def test_nan_str(self):
+    def test_inf_str(self):
         fmt = FloatFormatter(4, 3, inf_str="INFINITE")
         self.assertEqual(9, fmt.width)
         self.assertEqual('    0.000', fmt(      0.0  ))
@@ -513,7 +513,7 @@ class EFloatFormatterTest(unittest.TestCase):
             Exception, EFloatFormatter, 2, 2, nan_str="INVALID VALUE")
 
 
-    def test_nan_str(self):
+    def test_inf_str(self):
         fmt = EFloatFormatter(2, 3, inf_str="INFINITY")
         self.assertEqual(10, fmt.width)
         self.assertEqual(' 0.000E+00', fmt(      0.0  ))
