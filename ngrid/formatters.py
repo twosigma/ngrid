@@ -4,6 +4,8 @@ Formatters for rendering values as strings.
 
 #-------------------------------------------------------------------------------
 
+from   __future__ import absolute_import
+
 import datetime
 import math
 import six
@@ -198,6 +200,10 @@ class FloatFormatter:
           a sign; only nonnegative numbers may be formatted.
         @param point
           The decimal point character.
+        @param nan_str
+          The string to use for NaN; if too long, it is truncated.
+        @param inf_str
+          The string to use for infinity; if too long, it is truncated.
         """
         assert size >= 0
         assert precision is None or precision >= 0
@@ -207,8 +213,8 @@ class FloatFormatter:
         width = size
         if precision is not None:
             width += len(point) + precision
-        assert len(nan_str) <= width
-        assert len(inf_str) <= width
+        nan_str = nan_str[: width]
+        inf_str = inf_str[: width]
         if sign in ("-", "+"):
             width += 1
 
@@ -368,6 +374,10 @@ class EFloatFormatter:
           The decimal point character.
         @param exp
           The character that introduces the exponent.
+        @param nan_str
+          The string to use for NaN; if too long, it is truncated.
+        @param inf_str
+          The string to use for infinity; if too long, it is truncated.
         """
         assert size > 0
         assert precision is None or precision >= 0
@@ -376,8 +386,8 @@ class EFloatFormatter:
         width = (
             1 + (0 if precision is None else len(point) + precision)
             + len(exp) + 1 + size)
-        assert len(nan_str) <= width
-        assert len(inf_str) <= width
+        nan_str = nan_str[: width]
+        inf_str = inf_str[: width]
         if sign in ("-", "+"):
             width += 1
 

@@ -191,8 +191,7 @@ def get_default_formatter(type, values, cfg={}):
         return formatters.BoolFormatter("TRUE", "FALSE", size=1, pad_left=True)
 
     elif type is datetime:
-        # FIXME: Use which datetime format by default?
-        return formatters.DatetimeFormatter(formatters.DATETIME_FORMATS["TS"])
+        return formatters.DatetimeFormatter("ISO 8601 extended")
 
     else:
         raise NotImplementedError("type: {}".format(type))

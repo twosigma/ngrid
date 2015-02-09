@@ -281,7 +281,8 @@ class FloatFormatterTest(unittest.TestCase):
         self.assertEqual('-9999.99', fmt(  -9999.99 ))
         self.assertEqual(' INVALID', fmt(NAN))
 
-        self.assertRaises(Exception, FloatFormatter, 4, 0, nan_str="INVALID")
+        fmt = FloatFormatter(4, 0, nan_str="INVALID")
+        self.assertEqual(' INVAL', fmt(NAN))
 
 
     def test_inf_str(self):
@@ -292,7 +293,9 @@ class FloatFormatterTest(unittest.TestCase):
         self.assertEqual(' INFINITE', fmt(POS_INF))
         self.assertEqual('-INFINITE', fmt(NEG_INF))
 
-        self.assertRaises(Exception, FloatFormatter, 4, 0, inf_str="INFINITE")
+        fmt = FloatFormatter(4, 0, inf_str="INFINITE")
+        self.assertEqual(' INFIN', fmt(POS_INF))
+        self.assertEqual('-INFIN', fmt(NEG_INF))
 
 
 
@@ -511,8 +514,8 @@ class EFloatFormatterTest(unittest.TestCase):
         self.assertEqual('      Inf', fmt(POS_INF))
         self.assertEqual('     -Inf', fmt(NEG_INF))
 
-        self.assertRaises(
-            Exception, EFloatFormatter, 2, 2, nan_str="INVALID VALUE")
+        fmt = EFloatFormatter(2, None, nan_str="INVALID")
+        self.assertEqual(' INVAL', fmt(NAN))
 
 
     def test_inf_str(self):
@@ -524,8 +527,9 @@ class EFloatFormatterTest(unittest.TestCase):
         self.assertEqual('  INFINITY', fmt(POS_INF))
         self.assertEqual(' -INFINITY', fmt(NEG_INF))
 
-        self.assertRaises(
-            Exception,  EFloatFormatter, 4, 0, inf_str="WAY WAY TOO LARGE")
+        fmt = EFloatFormatter(2, None, inf_str="INFINITY")
+        self.assertEqual(' INFIN', fmt(POS_INF))
+        self.assertEqual('-INFIN', fmt(NEG_INF))
 
 
 
