@@ -11,6 +11,7 @@ Cleanups:
 - Comment formatters.
 - Change types dynamically in DelimitedFileModel (factor out logic?).
 - Factor out controller.
+- Do we need IntFormatter at all?  Just use FloatFormatter? (-> NumberFormatter)
 
 --------------------------------------------------------------------------------
 

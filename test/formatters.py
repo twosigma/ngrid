@@ -1,3 +1,4 @@
+import six
 import unittest
 
 from   ngrid.formatters import *
@@ -85,8 +86,9 @@ class IntFormatterTest(unittest.TestCase):
         self.assertEqual('                   -1', fmt(-1))
         self.assertEqual(' 10000000000000000000', fmt( 1e+19))
         self.assertEqual('-10000000000000000000', fmt(-1e+19))
-        self.assertEqual(' 99999999999999999999', fmt(int( 1e+20) - 1))
-        self.assertEqual('-99999999999999999998', fmt(int(-1e+20) + 2))
+        big_num = six.integer_types[-1](1e+20)
+        self.assertEqual(' 99999999999999999999', fmt( big_num - 1))
+        self.assertEqual('-99999999999999999998', fmt(-big_num + 2))
 
 
     def test_pad(self):

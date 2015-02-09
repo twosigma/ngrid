@@ -6,6 +6,7 @@ Formatters for rendering values as strings.
 
 import datetime
 import math
+import six
 
 from   pytz import UTC
 
@@ -146,6 +147,7 @@ class IntFormatter:
             else " ")
 
         result = str(abs(value))
+        # In Python 2, trim the L from long values.
         if len(result) > self.__size or value < 0 and self.__sign is None:
             # Doesn't fit.
             result =  "#" * self.__width
@@ -167,11 +169,13 @@ class IntFormatter:
         """
         Converts a value to an int and formats it.
         """
-        try:
-            value = round(value)
-        except TypeError:
-            pass
-        return self.format(int(value))
+        if not isinstance(value, six.integer_types):
+            try:
+                value = round(value)
+            except TypeError:
+                pass
+            value = int(value)
+        return self.format(value)
 
 
 
