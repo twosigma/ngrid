@@ -150,8 +150,12 @@ def get_default_formatter(type, values, cfg={}):
         return formatters.IntFormatter(size)
 
     elif type is float:
-        # Float types.  First determine the scale.
+        # Float types.  
         vals = values[~(np.isnan(values) | np.isinf(values))]
+        if len(vals) == 0:
+            # No normal values.
+            return formatters.FloatFormatter(1, 1)
+        # First determine the scale.
         neg = (vals < 0).any()
         abs_vals = abs(vals)
         max_val = abs_vals.max()
