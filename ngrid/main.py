@@ -1,12 +1,13 @@
 from   __future__ import absolute_import
 
+import codecs
 from   contextlib import closing
 import locale
 import optparse
 import os
 import sys
 
-from   six import print_
+import six
 
 from   . import grid
 
@@ -32,7 +33,7 @@ class OutputSaver:
     def close(self):
         sys.stdout = self.__old_stdout
         sys.stderr = self.__old_stderr
-        print_(self.__text)
+        six.print_(self.__text)
 
 
 
@@ -80,25 +81,45 @@ def main():
 
     options, args = parser.parse_args()
 
+    # Use the locale encoding to decode input files.
+    encoding = locale.getpreferredencoding()
+    if encoding.lower() == "utf-8":
+        # Force utf-8-sig to skip BOM.
+        encoding = "utf-8-sig"
+
+    # Prepare the input file.
     if len(args) < 1:
-        file = os.fdopen(os.dup(0), 'r')
+        # Read from stdin.
+        if six.PY2:
+            file = os.fdopen(os.dup(0), 'r')
+            file = codecs.getreader(encoding)(file)
+        else:
+            file = os.fdopen(os.dup(0), 'r', encoding=encoding)
         os.close(0)
+        # Attach stdin to tty for interactive input.
         sys.stdin = os.open("/dev/tty", os.O_RDONLY)
         filename = "(stdin)"
     else:
+        # Open an input file
         filename = args[0]
-        file = open(filename)
+        if six.PY2:
+            file = open(filename)
+            file = codecs.getreader(encoding)(file)
+        else:
+            file = open(filename, encoding=encoding)
 
     with closing(file):
         if options.dataframe:
             import pandas
-            df = pandas.read_csv(filename)
+            df = pandas.read_csv(file)
             model = grid.DataFrameModel(df, filename=filename)
         else:
             model = grid.DelimitedFileModel(
                 file, options.hasHeader, options.bufferSize, options.delim,
                 options.commentString, filename=filename)
 
+        # Show the grid.  But while we're in ncurses, capture stdout and stderr
+        # for debugging, and show it at the end.
         with closing(OutputSaver()):
             grid.show_model(model, num_frozen=options.frozenCols)
 
@@ -107,7 +128,7 @@ if __name__ == '__main__':
     try:    
         main()
     except (IOError, EOFError) as exc:
-        print_(exc, file=sys.stderr)
+        six.print_(exc, file=sys.stderr)
     except KeyboardInterrupt:
         pass
 
