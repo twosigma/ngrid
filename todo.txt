@@ -1,6 +1,6 @@
 Before release:
 - Update README.md.
-- Choose index column width better.
+- Choose index column width better (it's too small in incremental mode).
 - Move right/left one screen.
 
 --------------------------------------------------------------------------------
@@ -8,10 +8,10 @@ Before release:
 Cleanups:
 - Rename header -> title in columns.
 - Add __repr__ to formatters.
+- Do we need IntFormatter at all?  Just use FloatFormatter? (-> NumberFormatter)
 - Comment formatters.
 - Change types dynamically in DelimitedFileModel (factor out logic?).
 - Factor out controller.
-- Do we need IntFormatter at all?  Just use FloatFormatter? (-> NumberFormatter)
 
 --------------------------------------------------------------------------------
 
