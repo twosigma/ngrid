@@ -13,9 +13,6 @@ Cleanups:
 - Factor out controller.
 - Do we need IntFormatter at all?  Just use FloatFormatter? (-> NumberFormatter)
 
-- Create a stdout/stderr/logging handler while ngrid is running.
-  c.f. http://stackoverflow.com/a/14010948
-
 --------------------------------------------------------------------------------
 
 Possible additional features:

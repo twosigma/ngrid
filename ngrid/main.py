@@ -12,6 +12,32 @@ from   . import grid
 
 #-------------------------------------------------------------------------------
 
+class OutputSaver:
+    """
+    Captures `sys.stdout` and `sys.stderr` and prints it on close.
+    """
+
+    def __init__(self):
+        self.__text = ""
+        self.__old_stdout = sys.stdout
+        self.__old_stderr = sys.stderr
+        sys.stdout = self
+        sys.stderr = self
+
+
+    def write(self, text):
+        self.__text += text
+
+
+    def close(self):
+        sys.stdout = self.__old_stdout
+        sys.stderr = self.__old_stderr
+        print_(self.__text)
+
+
+
+#-------------------------------------------------------------------------------
+
 def main():
     # Set the default locale.  This is required for ncurses to decode encoded
     # strings.  Hopefully, the encoding supports the characters we use.
@@ -73,7 +99,8 @@ def main():
                 file, options.hasHeader, options.bufferSize, options.delim,
                 options.commentString, filename=filename)
 
-        grid.show_model(model, num_frozen=options.frozenCols)
+        with closing(OutputSaver()):
+            grid.show_model(model, num_frozen=options.frozenCols)
 
 
 if __name__ == '__main__':
