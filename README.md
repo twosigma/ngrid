@@ -7,9 +7,9 @@ terminal enviroment.  ngrid is to tables as
 
 ## Installing
 
-'''
+```
 pip install git+https://github.com/twosigma/ngrid
-'''
+```
 
 
 ## Command line
