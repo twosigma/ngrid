@@ -5,6 +5,13 @@ terminal enviroment.  ngrid is to tables as
 [less](http://en.wikipedia.org/wiki/Less_%28Unix%29) is to text.
 
 
+## Installing
+
+'''
+pip install git+https://github.com/twosigma/ngrid
+'''
+
+
 ## Command line
 
 The `ngrid` command reads CSV data from a file, or from standard input if no

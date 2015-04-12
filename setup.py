@@ -8,7 +8,7 @@ with open(join(here, 'DESCRIPTION.rst')) as file:
 
 setup(
     name                ='ngrid',
-    version             ='0.0.0',
+    version             ='0.1.0',
     description         ='less for data',
     long_description    =long_description,
     url                 ='https://github.com/twosigma/ngrid',
