@@ -1,8 +1,3 @@
-Before release:
-- Move right/left one screen.
-
---------------------------------------------------------------------------------
-
 Cleanups:
 - Rename header -> title in columns.
 - Add __repr__ to formatters.
@@ -15,6 +10,7 @@ Cleanups:
 
 Possible additional features:
 
+- Move right/left one screen.
 - Adjust number of frozen columns interactively.
 - Fix search.
 - Jump to column by name.
