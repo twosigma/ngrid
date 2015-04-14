@@ -1,5 +1,4 @@
 Before release:
-- Choose index column width better (it's too small in incremental mode).
 - Move right/left one screen.
 
 --------------------------------------------------------------------------------

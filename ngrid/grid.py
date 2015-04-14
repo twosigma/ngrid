@@ -866,8 +866,11 @@ class GridView:
                 status = self.flash
                 self.flash = None
             else:
-                filename = str(self.__model.filename)
-                status = "{}{}lines {}-{}/{}".format(
+                filename = u(self.__model.filename)
+                max_len = width - 40
+                if len(filename) > max_len:
+                    filename = "..." + filename[-max_len + 3 :]
+                status = u("{}{}lines {}-{}/{}").format(
                     filename,
                     " " if len(filename) > 0 else "",
                     self.__idx0,
