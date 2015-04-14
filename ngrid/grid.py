@@ -511,8 +511,8 @@ class GridView:
 
             curses.KEY_PPAGE: lambda: self.__move_by(-self.__num_rows),
 
-            ord('d')        : lambda: self.__move_by( self.__num_rows / 2),
-            ord('u')        : lambda: self.__move_by(-self.__num_rows / 2),
+            ord('d')        : lambda: self.__move_by( self.__num_rows // 2),
+            ord('u')        : lambda: self.__move_by(-self.__num_rows // 2),
 
             curses.KEY_LEFT : lambda: self.__move(0, -1),
             curses.KEY_RIGHT: lambda: self.__move(0, +1),
