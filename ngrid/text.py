@@ -4,6 +4,10 @@ Text utilities.
 
 #-------------------------------------------------------------------------------
 
+import six
+
+#-------------------------------------------------------------------------------
+
 def indent(string, indent):
     """
     Indents each line of a string.
@@ -57,7 +61,7 @@ def elide(string, max_length, ellipsis="...", position=1.0):
     assert max_length >= len(ellipsis)
     assert 0 <= position <= 1
 
-    string = str(string)
+    string = six.text_type(string)
     length = len(string)
     if length <= max_length:
         return string

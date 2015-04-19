@@ -100,10 +100,10 @@ def main():
         sys.stdin = os.open("/dev/tty", os.O_RDONLY)
         filename = "(stdin)"
     else:
-        # Open an input file
+        # Open an input file.
         filename = args[0]
         if six.PY2:
-            file = open(filename)
+            file = open(filename, "rb")
             file = codecs.getreader(encoding)(file)
         else:
             file = open(filename, encoding=encoding)

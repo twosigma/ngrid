@@ -201,6 +201,34 @@ def get_default_formatter(type, values, cfg={}):
         raise NotImplementedError("type: {}".format(type))
         
 
+def _make_csv_reader(lines, delimiter, quotechar):
+    """
+    Creates a unicode-friendly CSV reader.
+
+    Uses the default flavor.
+
+    @param lines
+      Lines to read as CSV.
+    @type lines
+      Iterable of unicode (Python 2) or str (Python 3).
+    @param delimiter
+      The delimiter character.
+    @param quotechar
+      The quoting character.
+    """
+    if six.PY2:
+        # csv.reader doesn't handle unicode; encode lines temporarily as UTF-8 
+        # to pass through it, per prescription in csv module documentation.
+        return (
+            [ x.decode("utf-8") for x in row ]
+            for row in csv.reader(
+                ( l.encode("utf-8") for l in lines ),
+                delimiter=delimiter, quotechar=quotechar)
+        )
+    elif six.PY3:
+        return csv.reader(lines, delimiter=delimiter, quotechar=quotechar)
+
+
 def guess_delimiter(lines, delims=None):
     """
     Guesses the delimiter for lines of delimited data.
@@ -212,7 +240,7 @@ def guess_delimiter(lines, delims=None):
 
     def get_count(delim):
         # Read lines as delimited.
-        rows = csv.reader(lines, delimiter=delim, quotechar='"')
+        rows = _make_csv_reader(lines, delimiter=delim, quotechar='"')
         # Return the row length, as long as all are the same.
         count = len(next(rows))
         return count if all( len(r) == count for r in rows ) else 0
@@ -286,13 +314,13 @@ class DelimitedFileModel:
             delim = guess_delimiter(sample_lines)
 
         # Now that we have a delimiter, sanitize the sample rows.
-        sample_rows = csv.reader(
+        sample_rows = _make_csv_reader(
             sample_lines, delimiter=delim, quotechar=QUOTE_CHAR)
         self.__rows = [ self.clean_row(r) for r in sample_rows ]
 
         # Set up to read additional rows.
         more_lines = ( l for l in lines if not self.__is_comment(l) )
-        more_rows = csv.reader(
+        more_rows = _make_csv_reader(
             more_lines, delimiter=delim, quotechar=QUOTE_CHAR)
         self.__more_rows = ( self.clean_row(r) for r in more_rows )
 
@@ -866,7 +894,7 @@ class GridView:
                 status = self.flash
                 self.flash = None
             else:
-                filename = u(self.__model.filename)
+                filename = six.text_type(self.__model.filename)
                 max_len = width - 40
                 if len(filename) > max_len:
                     filename = "..." + filename[-max_len + 3 :]
