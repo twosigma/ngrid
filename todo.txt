@@ -10,9 +10,10 @@ Cleanups:
 
 Possible additional features:
 
+- Fix search.
 - Move right/left one screen.
 - Adjust number of frozen columns interactively.
-- Fix search.
+- Non-interactive mode: format data to stdout.
 - Jump to column by name.
 - Datetime support.
 - Timezone support. (?)
